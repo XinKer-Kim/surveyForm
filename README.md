@@ -16,7 +16,7 @@
 
 1.  **저장소 클론:**
     ```bash
-    git clone [https://github.com/XinKer-Kim/surveyForm.git](https://github.com/XinKer-Kim/surveyForm.git)
+    git clone https://github.com/XinKer-Kim/surveyForm.git
     cd surveyForm
     ```
 
