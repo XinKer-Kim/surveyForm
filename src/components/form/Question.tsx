@@ -1,4 +1,8 @@
 import { FC, useState } from "react";
+import QuestionShortAnswer from "./QuestionShortAnswer";
+import QuestionLongAnswer from "./QuestionLongAnswer";
+import QuestionMultipleChoice from "@/components/form/QuestionMultipleChoice";
+import QuestionDropdown from "@/components/form/QuestionDropdown";
 import { Textarea } from "@/components/ui/textarea"; // shadcn/ui
 import Input from "./Input";
 import {
@@ -36,7 +40,62 @@ const Question: FC<QuestionProps> = ({
     setQuestionText(newText);
     onQuestionChange({ ...question, text: newText });
   };
+  const [options, setOptions] = useState(question.options || [""]);
+  const [allowMultiple, setAllowMultiple] = useState(
+    question.allowMultiple || false
+  );
+  const [hasEtc, setHasEtc] = useState(question.hasEtc || false);
 
+  // S : 질문 함수 영역
+  // 항목 텍스트 수정
+  const handleOptionChange = (value: string, idx: number) => {
+    const newOptions = [...options];
+    newOptions[idx] = value;
+    setOptions(newOptions);
+    onQuestionChange({
+      ...question,
+      options: newOptions,
+    });
+  };
+
+  // 항목 삭제
+  const handleDeleteOption = (idx: number) => {
+    const newOptions = options.filter((_, i) => i !== idx);
+    setOptions(newOptions);
+    onQuestionChange({
+      ...question,
+      options: newOptions,
+    });
+  };
+  const handleAddOption = () => {
+    const newOptions = [...options, ""];
+    setOptions(newOptions);
+    onQuestionChange({
+      ...question,
+      options: newOptions,
+    });
+  };
+
+  // '기타' 토글
+  const handleToggleEtc = () => {
+    setHasEtc(!hasEtc);
+    onQuestionChange({
+      ...question,
+      hasEtc: !hasEtc,
+    });
+  };
+
+  // 복수선택 토글
+  const handleToggleMultiple = () => {
+    setAllowMultiple(!allowMultiple);
+    onQuestionChange({
+      ...question,
+      allowMultiple: !allowMultiple,
+    });
+  };
+
+
+  // E : 질문 함수 영역
   return (
     <div className="mb-4 border rounded-md p-4">
       <div className="flex items-center justify-between mb-2">
@@ -62,24 +121,32 @@ const Question: FC<QuestionProps> = ({
         </Select>
       </div>
       {/* 각 질문 유형에 따른 추가 UI (예: 객관식 답변 옵션 등) */}
-      {questionType === "text_short" && (
-        <Input
-          maxLength={100}
-          placeholder="답변을 입력하세요 (최대 100자)"
-          className="mt-2"
+      {questionType === "text_short" && <QuestionShortAnswer />}
+      {questionType === "text_long" && <QuestionLongAnswer />}
+
+      {questionType === "radio" && (
+        <QuestionMultipleChoice
+          options={options}
+          hasEtc={hasEtc}
+          allowMultiple={allowMultiple}
+          onOptionChange={handleOptionChange}
+          onDeleteOption={handleDeleteOption}
+          onAddOption={handleAddOption}
+          onToggleEtc={handleToggleEtc}
+          onToggleMultiple={handleToggleMultiple}
+        />
+      )}
+      {questionType === "dropdown" && (
+        <QuestionDropdown
+          options={options}
+          hasEtc={hasEtc}
+          onOptionChange={handleOptionChange}
+          onDeleteOption={handleDeleteOption}
+          onAddOption={handleAddOption}
+          onToggleEtc={handleToggleEtc}
         />
       )}
 
-      {questionType === "text_long" && (
-        <Textarea
-          maxLength={2000}
-          placeholder="답변을 입력하세요 (최대 2000자)"
-          className="mt-2"
-        />
-      )}
-
-      {questionType === "radio" && <div>객관식 답변 옵션 UI</div>}
-      {questionType === "dropdown" && <div>드롭다운 답변 옵션 UI</div>}
       {questionType === "star" && <div>별점 옵션 UI</div>}
       {questionType === "score" && <div>점수 옵션 UI</div>}
 

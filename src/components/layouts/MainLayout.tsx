@@ -1,5 +1,5 @@
-import type { FC, ReactNode } from "react";
-import { cn } from "@/utils/helpers"; // 유틸리티 함수 (아래에 정의)
+import type { FC, ReactNode } from 'react';
+import { cn } from '@/utils/helpers'; // 유틸리티 함수 (아래에 정의)
 
 interface MainLayoutProps {
   children: ReactNode;
