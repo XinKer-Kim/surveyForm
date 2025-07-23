@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import CustomInput from '@/components/form/Input';
+import Question from '@/components/form/Question';
 
 const FormBuilderPage = () => {
   const { formId } = useParams(); // formId 파라미터 가져오기
@@ -23,11 +24,7 @@ const FormBuilderPage = () => {
   const handleAddInput = () => {
     setFormElements([
       ...formElements,
-<<<<<<< HEAD
-      { type: 'text', label: `질문 ${formElements.length + 1}` },
-=======
-      { type: "text_short", text: "", order_number: formElements.length + 1 },
->>>>>>> origin/main
+      { type: 'text_short', text: '', order_number: formElements.length + 1 },
     ]);
   };
 
@@ -54,17 +51,6 @@ const FormBuilderPage = () => {
       </div>
       <div>
         {formElements.map((element, index) => (
-<<<<<<< HEAD
-          <div key={index} className="mb-4">
-            {element.type === 'text' && (
-              <CustomInput
-                label={element.label}
-                placeholder="여기에 질문을 입력하세요"
-              />
-            )}
-            {/* 다른 폼 요소에 대한 처리 */}
-          </div>
-=======
           <Question
             key={index}
             question={{ ...element, order_number: index + 1 }}
@@ -83,7 +69,6 @@ const FormBuilderPage = () => {
               setFormElements(newElements);
             }}
           />
->>>>>>> origin/main
         ))}
       </div>
       <button
