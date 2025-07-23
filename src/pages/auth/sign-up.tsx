@@ -63,9 +63,7 @@ function SignUp() {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log("제출됨:", values);
-  };
+
 
   return (
     <Form {...form}>
