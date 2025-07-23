@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
-// import QuestionShortAnswer from "./QuestionShortAnswer";
-// import QuestionLongAnswer from "./QuestionLongAnswer";
+import QuestionShortAnswer from "./QuestionShortAnswer";
+import QuestionLongAnswer from "./QuestionLongAnswer";
 import QuestionMultipleChoice from "@/components/form/QuestionMultipleChoice";
 import { Textarea } from "@/components/ui/textarea"; // shadcn/ui
 import Input from "./Input";
@@ -119,21 +119,8 @@ const Question: FC<QuestionProps> = ({
         </Select>
       </div>
       {/* 각 질문 유형에 따른 추가 UI (예: 객관식 답변 옵션 등) */}
-      {questionType === "text_short" && (
-        <Input
-          maxLength={100}
-          placeholder="답변을 입력하세요 (최대 100자)"
-          className="mt-2"
-        />
-      )}
-
-      {questionType === "text_long" && (
-        <Textarea
-          maxLength={2000}
-          placeholder="답변을 입력하세요 (최대 2000자)"
-          className="mt-2"
-        />
-      )}
+      {questionType === "text_short" && <QuestionShortAnswer />}
+      {questionType === "text_long" && <QuestionLongAnswer />}
 
       {questionType === "radio" && (
         <QuestionMultipleChoice
