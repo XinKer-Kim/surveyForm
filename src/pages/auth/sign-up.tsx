@@ -214,7 +214,6 @@ function SignUp() {
           )}
         />
 
-
         <Button type="submit" className="w-full">
           가입하기
         </Button>
