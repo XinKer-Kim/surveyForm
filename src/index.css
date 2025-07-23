@@ -218,3 +218,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+.text-naver {
+  color: #0dcb67;
+}
+
+.bg-naver {
+  background-color: #0dcb67;
+}
+
+.border-naver {
+  border-color: #0dcb67;
+}
+
