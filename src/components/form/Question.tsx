@@ -3,6 +3,9 @@ import QuestionShortAnswer from "./QuestionShortAnswer";
 import QuestionLongAnswer from "./QuestionLongAnswer";
 import QuestionMultipleChoice from "@/components/form/QuestionMultipleChoice";
 import QuestionDropdown from "@/components/form/QuestionDropdown";
+import QuestionStarRating from "./QuestionStarRating";
+import QuestionScore from "./QuestionScore";
+
 import { Textarea } from "@/components/ui/textarea"; // shadcn/ui
 import Input from "./Input";
 import {
@@ -28,7 +31,16 @@ const Question: FC<QuestionProps> = ({
   onDelete,
 }) => {
   const [questionType, setQuestionType] = useState(question.type);
+  const [starUnit, setStarUnit] = useState(question.unit || 1);
   const [questionText, setQuestionText] = useState(question.text || "");
+  const [scoreMin, setScoreMin] = useState(question.min ?? 1);
+  const [scoreMax, setScoreMax] = useState(question.max ?? 5);
+  const [scoreLeftLabel, setScoreLeftLabel] = useState(
+    question.leftLabel ?? ""
+  );
+  const [scoreRightLabel, setScoreRightLabel] = useState(
+    question.rightLabel ?? ""
+  );
 
   const handleTypeChange = (type: string) => {
     setQuestionType(type);
@@ -47,7 +59,14 @@ const Question: FC<QuestionProps> = ({
   const [hasEtc, setHasEtc] = useState(question.hasEtc || false);
 
   // S : 질문 함수 영역
-  // 항목 텍스트 수정
+  const handleChangeStarUnit = (unit: 0.5 | 1) => {
+    setStarUnit(unit);
+    onQuestionChange({
+      ...question,
+      unit,
+    });
+  };
+
   const handleOptionChange = (value: string, idx: number) => {
     const newOptions = [...options];
     newOptions[idx] = value;
@@ -93,7 +112,6 @@ const Question: FC<QuestionProps> = ({
       allowMultiple: !allowMultiple,
     });
   };
-
 
   // E : 질문 함수 영역
   return (
@@ -147,8 +165,21 @@ const Question: FC<QuestionProps> = ({
         />
       )}
 
-      {questionType === "star" && <div>별점 옵션 UI</div>}
-      {questionType === "score" && <div>점수 옵션 UI</div>}
+      {questionType === "star" && (
+        <QuestionStarRating
+          unit={starUnit}
+          onChangeUnit={handleChangeStarUnit}
+        />
+      )}
+      {questionType === "score" && (
+        <QuestionScore
+          min={question.min ?? 0}
+          max={question.max ?? 5}
+          leftLabel={question.leftLabel ?? ""}
+          rightLabel={question.rightLabel ?? ""}
+          onChange={(partial) => onQuestionChange({ ...question, ...partial })}
+        />
+      )}
 
       <div className="flex justify-end mt-2">
         <Button
