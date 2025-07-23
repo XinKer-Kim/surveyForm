@@ -5,6 +5,7 @@ import MainLayout from './components/layouts/MainLayout';
 import HomePage from './pages/HomePage'; // HomePage import
 import NavBar from './components/navbar/NavBar';
 
+
 function App() {
   return (
     <BrowserRouter>
