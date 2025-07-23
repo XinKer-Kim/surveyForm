@@ -1,16 +1,10 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import "./index.css";
-import { BrowserRouter, Route, Routes } from "react-router";
-import HomePage from "./HomePage.tsx";
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.tsx'
 
-createRoot(document.getElementById("root")!).render(
+createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage />} />{" "}
-        {/* 첫 화면을 HomePage로 변경 */}
-      </Routes>
-    </BrowserRouter>
-  </StrictMode>
-);
+    <App />
+  </StrictMode>,
+)
