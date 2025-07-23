@@ -1,6 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
-const HomePage = () => {
+function CreatePage() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">나의 설문들</h1>
@@ -52,6 +52,6 @@ const HomePage = () => {
       {/* 추가적으로 공지사항이나 템플릿 목록 등을 표시할 수 있습니다. */}
     </div>
   );
-};
+}
 
-export default HomePage;
+export default CreatePage;
