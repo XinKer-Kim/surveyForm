@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import CustomInput from "@/components/form/Input";
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import CustomInput from '@/components/form/Input';
 
 const FormBuilderPage = () => {
   const { formId } = useParams(); // formId 파라미터 가져오기
@@ -8,14 +8,14 @@ const FormBuilderPage = () => {
   const [formElements, setFormElements] = useState<any[]>([]); // 폼 요소 상태 관리
 
   useEffect(() => {
-    if (formId && formId !== "new") {
+    if (formId && formId !== 'new') {
       // 기존 설문 데이터를 불러오는 로직 (Supabase 연동 필요)
       console.log(`Editing form with ID: ${formId}`);
       // 예시로 폼 요소 데이터를 설정
-      setFormElements([{ type: "text", label: "기존 질문 1" }]);
+      setFormElements([{ type: 'text', label: '기존 질문 1' }]);
     } else {
       // 새로운 폼 생성
-      console.log("Creating a new form");
+      console.log('Creating a new form');
       setFormElements([]); // 초기화
     }
   }, [formId]);
@@ -23,21 +23,21 @@ const FormBuilderPage = () => {
   const handleAddInput = () => {
     setFormElements([
       ...formElements,
-      { type: "text", label: `질문 ${formElements.length + 1}` },
+      { type: 'text', label: `질문 ${formElements.length + 1}` },
     ]);
   };
 
   const handleSaveForm = () => {
     // 폼 데이터를 저장하는 로직 (Supabase 연동 필요)
-    console.log("Saving form:", formElements);
+    console.log('Saving form:', formElements);
     // 저장이 완료되면 사용자를 홈페이지로 리다이렉트하거나 다른 페이지로 이동
-    navigate("/");
+    navigate('/');
   };
 
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">
-        {formId === "new" ? "새 설문 만들기" : "설문 수정"}
+        {formId === 'new' ? '새 설문 만들기' : '설문 수정'}
       </h1>
       <div className="mb-4">
         <button
@@ -51,7 +51,7 @@ const FormBuilderPage = () => {
       <div>
         {formElements.map((element, index) => (
           <div key={index} className="mb-4">
-            {element.type === "text" && (
+            {element.type === 'text' && (
               <CustomInput
                 label={element.label}
                 placeholder="여기에 질문을 입력하세요"
