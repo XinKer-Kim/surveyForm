@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage'; // HomePage import
 import NavBar from './components/navbar/NavBar';
 import { NAVBAR_PADDING_TOP_CLASS } from './constants/layout';
 
+
 function App() {
   return (
     <BrowserRouter>
