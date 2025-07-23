@@ -3,25 +3,45 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import CustomInput from '@/components/form/Input';
 import Question from '@/components/form/Question';
 import { Button } from '@/components/ui/button';
+import { supabase } from "@/supabaseClient"
 import QuestionTitle from '@/components/form/QuestionTitle';
+import type { QuestionData } from "@/types/question";
+
 
 const FormBuilderPage = () => {
   const { formId } = useParams(); // formId 파라미터 가져오기
   const navigate = useNavigate();
   const [formElements, setFormElements] = useState<any[]>([]); // 폼 요소 상태 관리
+    const [title, setTitle] = useState(""); // 폼 제목
+    const [description, setDescription] = useState("");
 
-  useEffect(() => {
-    if (formId && formId !== 'new') {
-      // 기존 설문 데이터를 불러오는 로직 (Supabase 연동 필요)
-      console.log(`Editing form with ID: ${formId}`);
-      // 예시로 폼 요소 데이터를 설정
-      setFormElements([{ type: 'text', label: '기존 질문 1' }]);
-    } else {
-      // 새로운 폼 생성
-      console.log('Creating a new form');
-      setFormElements([]); // 초기화
-    }
-  }, [formId]);
+    useEffect(() => {
+        if (formId && formId !== "new") {
+            const loadForm = async () => {
+                const { data: form } = await supabase
+                    .from("forms")
+                    .select("*")
+                    .eq("id", formId)
+                    .single();
+
+                const { data: questions } = await supabase
+                    .from("questions")
+                    .select("*")
+                    .eq("form_id", formId)
+                    .order("order_number", { ascending: true });
+
+                setTitle(form.title);
+                setDescription(form.description);
+                setFormElements(questions || []);
+            };
+
+            loadForm();
+        } else {
+            setFormElements([]); // 새 설문
+            setTitle("");
+            setDescription("");
+        }
+    }, [formId]);
 
   const handleAddInput = () => {
     setFormElements([
@@ -34,12 +54,53 @@ const FormBuilderPage = () => {
     console.log('페이지 추가');
   };
 
-  const handleSaveForm = () => {
-    // 폼 데이터를 저장하는 로직 (Supabase 연동 필요)
-    console.log('Saving form:', formElements);
-    // 저장이 완료되면 사용자를 홈페이지로 리다이렉트하거나 다른 페이지로 이동
-    navigate('/');
-  };
+    const handleSaveForm = async () => {
+        if (formId === "new") {
+            // 1. 폼 생성
+            const { data: formData, error: formError } = await supabase
+                .from("forms")
+                .insert({
+                    user_id: "1dd927e3-2b9d-4d7a-a23d-578e1934bac3", // 하드코딩된 테스트 유저
+                    title,
+                    description,
+                })
+                .select()
+                .single();
+
+            if (formError || !formData) {
+                alert("폼 저장 실패");
+                return;
+            }
+
+            // 2. 질문 저장
+            const questionsToInsert = formElements.map((q, i) => ({
+                ...q,
+                form_id: formData.id,
+                order_number: i + 1,
+            }));
+
+            await supabase.from("questions").insert(questionsToInsert);
+        } else {
+            // 수정 모드 (questions는 재업로드 방식)
+            await supabase
+                .from("forms")
+                .update({ title, description })
+                .eq("id", formId);
+
+            await supabase.from("questions").delete().eq("form_id", formId);
+
+            const questionsToInsert = formElements.map((q, i) => ({
+                ...q,
+                form_id: formId,
+                order_number: i + 1,
+            }));
+
+            await supabase.from("questions").insert(questionsToInsert);
+        }
+
+        alert("저장 완료!");
+        navigate("/my-forms");
+    };
 
   return (
     <div>
