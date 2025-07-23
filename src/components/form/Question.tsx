@@ -94,6 +94,7 @@ const Question: FC<QuestionProps> = ({
     });
   };
 
+
   // E : 질문 함수 영역
   return (
     <div className="mb-4 border rounded-md p-4">
