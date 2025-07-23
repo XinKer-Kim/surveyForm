@@ -2,6 +2,7 @@ import { FC, useState } from "react";
 import QuestionShortAnswer from "./QuestionShortAnswer";
 import QuestionLongAnswer from "./QuestionLongAnswer";
 import QuestionMultipleChoice from "@/components/form/QuestionMultipleChoice";
+import QuestionDropdown from "@/components/form/QuestionDropdown";
 import { Textarea } from "@/components/ui/textarea"; // shadcn/ui
 import Input from "./Input";
 import {
@@ -93,6 +94,7 @@ const Question: FC<QuestionProps> = ({
     });
   };
 
+
   // E : 질문 함수 영역
   return (
     <div className="mb-4 border rounded-md p-4">
@@ -134,7 +136,17 @@ const Question: FC<QuestionProps> = ({
           onToggleMultiple={handleToggleMultiple}
         />
       )}
-      {questionType === "dropdown" && <div>드롭다운 답변 옵션 UI</div>}
+      {questionType === "dropdown" && (
+        <QuestionDropdown
+          options={options}
+          hasEtc={hasEtc}
+          onOptionChange={handleOptionChange}
+          onDeleteOption={handleDeleteOption}
+          onAddOption={handleAddOption}
+          onToggleEtc={handleToggleEtc}
+        />
+      )}
+
       {questionType === "star" && <div>별점 옵션 UI</div>}
       {questionType === "score" && <div>점수 옵션 UI</div>}
 
