@@ -1,5 +1,5 @@
-import { FC, InputHTMLAttributes } from "react";
-import { Input } from "@/components/ui/input"; // shadcn/ui Input 컴포넌트
+import type { FC, InputHTMLAttributes } from 'react';
+import { Input } from '@/components/ui/input'; // shadcn/ui Input 컴포넌트
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
