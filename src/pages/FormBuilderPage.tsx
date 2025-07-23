@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import CustomInput from '@/components/form/Input';
 import Question from '@/components/form/Question';
+import { Button } from '@/components/ui/button';
+import QuestionTitle from '@/components/form/QuestionTitle';
 
 const FormBuilderPage = () => {
   const { formId } = useParams(); // formId 파라미터 가져오기
@@ -28,6 +30,10 @@ const FormBuilderPage = () => {
     ]);
   };
 
+  const handleAddPage = () => {
+    console.log('페이지 추가');
+  };
+
   const handleSaveForm = () => {
     // 폼 데이터를 저장하는 로직 (Supabase 연동 필요)
     console.log('Saving form:', formElements);
@@ -41,13 +47,10 @@ const FormBuilderPage = () => {
         {formId === 'new' ? '새 설문 만들기' : '설문 수정'}
       </h1>
       <div className="mb-4">
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2"
-          onClick={handleAddInput}
-        >
-          질문 추가
-        </button>
-        {/* 다른 폼 요소 추가 버튼들을 만들 수 있습니다. */}
+        <QuestionTitle
+          handleAddInput={handleAddInput}
+          handleAddPage={handleAddPage}
+        />
       </div>
       <div>
         {formElements.map((element, index) => (
