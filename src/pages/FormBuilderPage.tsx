@@ -23,7 +23,11 @@ const FormBuilderPage = () => {
   const handleAddInput = () => {
     setFormElements([
       ...formElements,
+<<<<<<< HEAD
       { type: 'text', label: `질문 ${formElements.length + 1}` },
+=======
+      { type: "text_short", text: "", order_number: formElements.length + 1 },
+>>>>>>> origin/main
     ]);
   };
 
@@ -50,6 +54,7 @@ const FormBuilderPage = () => {
       </div>
       <div>
         {formElements.map((element, index) => (
+<<<<<<< HEAD
           <div key={index} className="mb-4">
             {element.type === 'text' && (
               <CustomInput
@@ -59,6 +64,26 @@ const FormBuilderPage = () => {
             )}
             {/* 다른 폼 요소에 대한 처리 */}
           </div>
+=======
+          <Question
+            key={index}
+            question={{ ...element, order_number: index + 1 }}
+            onQuestionChange={(updatedQuestion) => {
+              const newElements = [...formElements];
+              newElements[index] = updatedQuestion;
+              setFormElements(newElements);
+            }}
+            onDuplicate={() => {
+              const newElements = [...formElements];
+              newElements.splice(index + 1, 0, { ...element });
+              setFormElements(newElements);
+            }}
+            onDelete={() => {
+              const newElements = formElements.filter((_, i) => i !== index);
+              setFormElements(newElements);
+            }}
+          />
+>>>>>>> origin/main
         ))}
       </div>
       <button

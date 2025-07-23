@@ -1,5 +1,6 @@
 import { FC, useState } from "react";
-import CustomInput from "./Input";
+import { Textarea } from "@/components/ui/textarea"; // shadcn/ui
+import Input from "./Input";
 import {
   Select,
   SelectContent,
@@ -39,7 +40,7 @@ const Question: FC<QuestionProps> = ({
   return (
     <div className="mb-4 border rounded-md p-4">
       <div className="flex items-center justify-between mb-2">
-        <CustomInput
+        <Input
           label={`질문 ${question.order_number}`}
           value={questionText}
           onChange={handleTextChange}
@@ -61,6 +62,22 @@ const Question: FC<QuestionProps> = ({
         </Select>
       </div>
       {/* 각 질문 유형에 따른 추가 UI (예: 객관식 답변 옵션 등) */}
+      {questionType === "text_short" && (
+        <Input
+          maxLength={100}
+          placeholder="답변을 입력하세요 (최대 100자)"
+          className="mt-2"
+        />
+      )}
+
+      {questionType === "text_long" && (
+        <Textarea
+          maxLength={2000}
+          placeholder="답변을 입력하세요 (최대 2000자)"
+          className="mt-2"
+        />
+      )}
+
       {questionType === "radio" && <div>객관식 답변 옵션 UI</div>}
       {questionType === "dropdown" && <div>드롭다운 답변 옵션 UI</div>}
       {questionType === "star" && <div>별점 옵션 UI</div>}
