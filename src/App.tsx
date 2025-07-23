@@ -4,9 +4,9 @@ import ResponsePage from './pages/ResponsePage';
 import MainLayout from './components/layouts/MainLayout';
 import HomePage from './pages/HomePage'; // HomePage import
 import NavBar from './components/navbar/NavBar';
+import SignIn from '@/pages/auth/sign-in';
+import SignUp from '@/pages/auth/sign-up';
 import { NAVBAR_PADDING_TOP_CLASS } from './constants/layout';
-import SignIn from './pages/auth/sign-in';
-import SignUp from './pages/auth/sign-up';
 
 function App() {
   return (
