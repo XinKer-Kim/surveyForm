@@ -10,6 +10,7 @@ import {
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Link } from "react-router";
 
 function SignIn() {
   return (
@@ -57,9 +58,10 @@ function SignIn() {
               >
                 로그인
               </Button>
-              <Button variant="outline" className="w-full cursor-pointer">
+              <Link to={"/sign-up"} className="w-full cursor-pointer">
                 회원가입
-              </Button>
+              </Link>
+
             </CardFooter>
           </Card>
         </div>
