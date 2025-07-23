@@ -4,6 +4,7 @@ import ResponsePage from './pages/ResponsePage';
 import MainLayout from './components/layouts/MainLayout';
 import HomePage from './pages/HomePage'; // HomePage import
 import NavBar from './components/navbar/NavBar';
+import MyFormList from "@/pages/MyFormList"; // 경로에 맞게 조정
 import SignIn from '@/pages/auth/sign-in';
 import SignUp from '@/pages/auth/sign-up';
 import { NAVBAR_PADDING_TOP_CLASS } from './constants/layout';
@@ -22,7 +23,8 @@ function App() {
           <Route path="/builder/:formId" element={<FormBuilderPage />} />{" "}
           {/* 설문 수정 경로 */}
           <Route path="/responses/:formId" element={<ResponsePage />} />
-          <Route path="/sign-in" element={<SignIn />} />
+            <Route path="/my-forms" element={<MyFormList />} />
+            <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
         </Routes>
       </MainLayout>
