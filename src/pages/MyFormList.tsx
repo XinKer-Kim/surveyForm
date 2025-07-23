@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/supabaseClient";
 import { Button } from "@/components/ui/button";
+import  ShareLink from "@/components/ui/ShareLink";
+import  FormActionMenu from "@/components/ui/FormActionMenu";
 import { useNavigate } from "react-router-dom";
 
 interface FormType {
@@ -82,16 +84,11 @@ const MyFormList = () => {
             {formatDate(form.start_time)} ~ {formatDate(form.end_time)}
           </p>
           <div className="flex gap-2">
-            <Button onClick={() => navigate(`/results/${form.id}`)}>
+            <Button onClick={() => navigate(`/results/${form.id}`)} variant="outline" size="sm">
               결과 확인
             </Button>
-
-            <Button variant="ghost" size="icon">
-              ✏️
-            </Button>
-            <Button variant="ghost" size="icon">
-              ⋯
-            </Button>
+            <ShareLink formId={form.id} />
+            <FormActionMenu formId={form.id} />
           </div>
         </div>
       ))}
