@@ -1,3 +1,27 @@
+import { supabase } from "@/supabaseClient";
+const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const { email, password, confirmPassword } = values;
+
+    if (password !== confirmPassword) {
+        form.setError("confirmPassword", {
+            message: "비밀번호가 일치하지 않습니다.",
+        });
+        return;
+    }
+
+    const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+    });
+
+    if (error) {
+        alert(`회원가입 실패: ${error.message}`);
+    } else {
+        alert("회원가입 성공! 이메일 인증을 확인하세요.");
+        // 리디렉션 또는 추가 처리
+    }
+};
+
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
