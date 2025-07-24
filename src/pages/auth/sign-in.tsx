@@ -51,18 +51,22 @@ function SignIn() {
       email,
       password,
     });
+
     if (error) {
       Swal.fire({
         icon: "error",
         title: "로그인 실패",
         text: error.message,
       });
-    } else if (!error && data.user && data.session) {
+    } else if (data.user && data.session) {
+      console.log("로그인 성공 세션 데이터:", data.session);
+      sessionStorage.setItem("supabase_session", JSON.stringify(data.session));
       Swal.fire({
         icon: "success",
         title: "로그인 성공!",
+      }).then(() => {
+        navigate("/");
       });
-      navigate("/"); // 메인 페이지로 리다이렉션
     }
   };
 
