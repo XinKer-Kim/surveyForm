@@ -1,15 +1,17 @@
+import { useState } from 'react';
 import { Button } from '../ui/button';
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '../ui/dialog';
 import { Input } from '../ui/input';
+import DateConfigRow from './DateConfigRow';
+import { DialogDescription } from '@radix-ui/react-dialog';
 import { Label } from '../ui/label';
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 
@@ -19,9 +21,30 @@ interface QuestionTitleProps {
 }
 
 function QuestionTitle({ handleAddInput, handleAddPage }: QuestionTitleProps) {
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [startType, setStartType] = useState<string>('');
+  const [startDate, setStartDate] = useState<string>('');
+  const [startTime, setStartTime] = useState<string>('');
+  const [endType, setEndType] = useState<string>('');
+  const [endDate, setEndDate] = useState<string>('');
+  const [endTime, setEndTime] = useState<string>('');
+  const [dateConfig, setDateConfig] = useState<string>('');
+
+  const handleDialogConfirm = () => {
+    setDateConfig(
+      `${
+        startDate === '' || startType !== 'custom' ? '바로 시작' : startDate
+      } ${startTime} ~ ${
+        endDate === '' || endType !== 'custom' ? '제한 없음' : endDate
+      } ${endTime}`
+    );
+
+    if (isDialogOpen) setIsDialogOpen(false);
+  };
+
   return (
     <>
-      <div className="flex flex-col items-start border rounded-md p-4 gap-4">
+      <div className="flex flex-col items-start border border-t-4 border-naver rounded-b-md p-4 gap-4">
         {/* '설문 제목 입력', '설명 입력', '설문 기간' 필드 컨테이너 */}
         <div className="w-full flex flex-col gap-2">
           <Input
@@ -36,54 +59,55 @@ function QuestionTitle({ handleAddInput, handleAddPage }: QuestionTitleProps) {
           />
           <div className="flex flex-row items-center justify-start gap-2 ">
             <p className="w-20 text-xs">설문 기간</p>
-            <Dialog>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <Input
-                  type="text"
                   readOnly
-                  onClick={() => console.log('ㅎㅇ')}
+                  type="text"
+                  value={dateConfig}
                   className="focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </DialogTrigger>
-              <DialogContent className="sm:max-w-xs [&>button]:hidden">
+              <DialogContent showCloseButton={false} className="sm:max-w-xs">
                 <DialogHeader>
                   <DialogTitle className="flex justify-center py-1 text-base">
                     설문 기간
                   </DialogTitle>
+                  <DialogDescription />
                 </DialogHeader>
-                <div className="flex flex-col items-start gap-6">
-                  <div className="flex flex-row gap-2">
-                    <Label className="pr-4">시작</Label>
-                    <RadioGroup
-                      defaultValue="comfortable"
-                      className="flex flex-row gap-6"
-                    >
-                      <div className="flex items-center gap-3">
-                        <RadioGroupItem value="start" id="r1" />
-                        <Label htmlFor="r1">즉시 시작</Label>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <RadioGroupItem value="custom" id="r2" />
-                        <Label htmlFor="r2">직접 설정</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                  <div className="flex flex-row gap-2">
-                    <Label className="pr-4">종료</Label>
-                    <RadioGroup
-                      defaultValue="comfortable"
-                      className="flex flex-row gap-6"
-                    >
-                      <div className="flex items-center gap-3">
-                        <RadioGroupItem value="noLimit" id="r1" />
-                        <Label htmlFor="r1">제한 없음</Label>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <RadioGroupItem value="custom" id="r2" />
-                        <Label htmlFor="r2">직접 설정</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
+                <div className="flex flex-col items-start gap-8">
+                  <DateConfigRow
+                    radioGroup={{
+                      label: '시작',
+                      options: [
+                        { value: 'start', label: '즉시 시작' },
+                        { value: 'custom', label: '직접 설정' },
+                      ],
+                      defaultValue: 'start',
+                      onValueChange: (value) => setStartType(value),
+                    }}
+                    dateType={startType}
+                    formDate={startDate}
+                    formTime={startTime}
+                    onSetDateChange={setStartDate}
+                    onSetTimeChange={setStartTime}
+                  />
+                  <DateConfigRow
+                    radioGroup={{
+                      label: '종료',
+                      options: [
+                        { value: 'noLimit', label: '제한 없음' },
+                        { value: 'custom', label: '직접 설정' },
+                      ],
+                      defaultValue: 'noLimit',
+                      onValueChange: (value) => setEndType(value),
+                    }}
+                    dateType={endType}
+                    formDate={endDate}
+                    formTime={endTime}
+                    onSetDateChange={setEndDate}
+                    onSetTimeChange={setEndTime}
+                  />
                 </div>
                 <DialogFooter className="sm:justify-start">
                   <div className="w-full flex items-center justify-center gap-2">
@@ -91,7 +115,6 @@ function QuestionTitle({ handleAddInput, handleAddPage }: QuestionTitleProps) {
                       <Button
                         type="button"
                         className="w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded"
-                        onClick={handleAddPage}
                       >
                         취소
                       </Button>
@@ -99,7 +122,7 @@ function QuestionTitle({ handleAddInput, handleAddPage }: QuestionTitleProps) {
                     <Button
                       type="button"
                       className="w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded"
-                      onClick={handleAddPage}
+                      onClick={handleDialogConfirm}
                     >
                       확인
                     </Button>
