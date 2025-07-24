@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/supabaseClient";
 import { Button } from "@/components/ui/button";
+import  ShareLink from "@/components/ui/ShareLink";
+import  FormActionMenu from "@/components/ui/FormActionMenu";
+import { useNavigate } from "react-router-dom";
 
 interface FormType {
   id: string;
@@ -47,6 +50,7 @@ const MyFormList = () => {
     if (!endTime) return true;
     return new Date(endTime) > new Date();
   };
+  const navigate = useNavigate();
 
   return (
     <div className="p-4">
@@ -70,20 +74,21 @@ const MyFormList = () => {
               {formatDate(form.updated_at)} 수정
             </span>
           </div>
-          <h3 className="text-base font-semibold mb-1">{form.title}</h3>
+          <h3
+            className="text-base font-semibold mb-1 cursor-pointer hover:underline"
+            onClick={() => navigate(`/builder/${form.id}`)}
+          >
+            {form.title}
+          </h3>
           <p className="text-xs text-gray-500 mb-2">
             {formatDate(form.start_time)} ~ {formatDate(form.end_time)}
           </p>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm">
+            <Button onClick={() => navigate(`/results/${form.id}`)} variant="outline" size="sm">
               결과 확인
             </Button>
-            <Button variant="ghost" size="icon">
-              ✏️
-            </Button>
-            <Button variant="ghost" size="icon">
-              ⋯
-            </Button>
+            <ShareLink formId={form.id} />
+            <FormActionMenu formId={form.id} />
           </div>
         </div>
       ))}
