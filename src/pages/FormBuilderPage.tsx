@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import CustomInput from '@/components/form/Input';
 import Question from '@/components/form/Question';
-import { Button } from '@/components/ui/button';
 import { supabase } from '@/supabaseClient';
 import QuestionTitle from '@/components/form/QuestionTitle';
-import type { QuestionData } from '@/types/question';
+import { v4 as uuidv4 } from 'uuid';
 
 const FormBuilderPage = () => {
   const { formId } = useParams(); // formId 파라미터 가져오기
@@ -16,12 +14,14 @@ const FormBuilderPage = () => {
 
   useEffect(() => {
     if (formId && formId !== 'new') {
+      console.log('폼 수정 모드');
       const loadForm = async () => {
         const { data: form } = await supabase
           .from('forms')
           .select('*')
           .eq('id', formId)
           .single();
+        console.log('불러온 form 데이터:', form);
 
         const { data: questions } = await supabase
           .from('questions')
@@ -36,6 +36,7 @@ const FormBuilderPage = () => {
 
       loadForm();
     } else {
+      console.log('신규 폼 생성 모드');
       setFormElements([]); // 새 설문
       setTitle('');
       setDescription('');
@@ -45,7 +46,13 @@ const FormBuilderPage = () => {
   const handleAddInput = () => {
     setFormElements([
       ...formElements,
-      { type: 'text_short', text: '', order_number: formElements.length + 1 },
+      {
+        id: uuidv4(), // ✅ 고유 ID 부여
+        type: 'text_short',
+        text: '',
+        order_number: formElements.length + 1,
+        is_required: false,
+      },
     ]);
   };
 
@@ -94,11 +101,19 @@ const FormBuilderPage = () => {
         order_number: i + 1,
       }));
 
-      await supabase.from('questions').insert(questionsToInsert);
+      const { error: insertError } = await supabase
+        .from('questions')
+        .insert(questionsToInsert);
+
+      if (insertError) {
+        console.error('질문 저장 실패:', insertError);
+        alert('질문 저장 중 오류가 발생했습니다.');
+        return;
+      }
     }
 
     alert('저장 완료!');
-    navigate('/my-forms');
+    navigate('/list');
   };
 
   return (
