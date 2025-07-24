@@ -14,14 +14,12 @@ const FormBuilderPage = () => {
 
   useEffect(() => {
     if (formId && formId !== 'new') {
-      console.log('폼 수정 모드');
       const loadForm = async () => {
         const { data: form } = await supabase
           .from('forms')
           .select('*')
           .eq('id', formId)
           .single();
-        console.log('불러온 form 데이터:', form);
 
         const { data: questions } = await supabase
           .from('questions')
@@ -36,7 +34,6 @@ const FormBuilderPage = () => {
 
       loadForm();
     } else {
-      console.log('신규 폼 생성 모드');
       setFormElements([]); // 새 설문
       setTitle('');
       setDescription('');
