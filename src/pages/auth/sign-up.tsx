@@ -19,6 +19,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 const formSchema = z
   .object({
     username: z.string().min(2, {
@@ -99,126 +106,140 @@ function SignUp() {
   };
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-6 w-full max-w-sm mx-auto mt-10"
-      >
-        <FormField
-          name="username"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>이름</FormLabel>
-              <FormControl>
-                <Input placeholder="이름을 입력하세요" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>이메일</FormLabel>
-              <FormControl>
-                <Input placeholder="이메일을 입력하세요" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <Card className="w-full min-w-[400px] min-h-[400px] justify-between ">
+      <CardHeader className="px-0 sm:px-6">
+        <CardTitle className="text-lg">회원가입</CardTitle>
+        <CardDescription>회원가입을 위한 정보를 입력해주세요.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6 w-full max-w-sm mx-auto mt-10"
+          >
+            <FormField
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>이름</FormLabel>
+                  <FormControl>
+                    <Input placeholder="이름을 입력하세요" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>이메일</FormLabel>
+                  <FormControl>
+                    <Input placeholder="이메일을 입력하세요" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          name="password"
-          render={({ field }) => (
-            <FormItem className="relative">
-              <FormLabel>비밀번호</FormLabel>
-              <FormControl>
-                <Input
-                  type="password"
-                  placeholder="비밀번호를 입력하세요."
-                  {...field}
-                />
-              </FormControl>
+            <FormField
+              name="password"
+              render={({ field }) => (
+                <FormItem className="relative">
+                  <FormLabel>비밀번호</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="비밀번호를 입력하세요."
+                      {...field}
+                    />
+                  </FormControl>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          name="confirmPassword"
-          render={({ field }) => (
-            <FormItem className="relative">
-              <FormLabel>비밀번호 확인</FormLabel>
-              <FormControl>
-                <Input
-                  type="Password"
-                  placeholder="비밀번호 확인란을 입력하세요."
-                  {...field}
-                />
-              </FormControl>
+            <FormField
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem className="relative">
+                  <FormLabel>비밀번호 확인</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="Password"
+                      placeholder="비밀번호 확인란을 입력하세요."
+                      {...field}
+                    />
+                  </FormControl>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          name="gender"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>성별</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex  space-x-2"
-                >
-                  <FormItem className="flex items-center space-x-2">
-                    <FormControl>
-                      <RadioGroupItem value="male" id="gender-male" />
-                    </FormControl>
-                    <Label htmlFor="gender-male">남자</Label>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-2">
-                    <FormControl>
-                      <RadioGroupItem value="female" id="gender-female" />
-                    </FormControl>
-                    <Label htmlFor="gender-female">여자</Label>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-2">
-                    <FormControl>
-                      <RadioGroupItem value="undefined" id="gender-undefined" />
-                    </FormControl>
-                    <Label htmlFor="gender-undefined">선택 포기</Label>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              name="gender"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>성별</FormLabel>
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex  space-x-2"
+                    >
+                      <FormItem className="flex items-center space-x-2">
+                        <FormControl>
+                          <RadioGroupItem value="male" id="gender-male" />
+                        </FormControl>
+                        <Label htmlFor="gender-male">남자</Label>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2">
+                        <FormControl>
+                          <RadioGroupItem value="female" id="gender-female" />
+                        </FormControl>
+                        <Label htmlFor="gender-female">여자</Label>
+                      </FormItem>
+                      <FormItem className="flex items-center space-x-2">
+                        <FormControl>
+                          <RadioGroupItem
+                            value="undefined"
+                            id="gender-undefined"
+                          />
+                        </FormControl>
+                        <Label htmlFor="gender-undefined">선택 포기</Label>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <FormField
-          name="birthdate"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>생년월일을 선택해주세요.</FormLabel>
-              <FormControl>
-                <CalendarHook value={field.value} onChange={field.onChange} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              name="birthdate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>생년월일을 선택해주세요.</FormLabel>
+                  <FormControl>
+                    <CalendarHook
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <Button type="submit" className="w-full">
-          가입하기
-        </Button>
-      </form>
-    </Form>
+            <Button type="submit" className="w-full">
+              가입하기
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }
 export default SignUp;
