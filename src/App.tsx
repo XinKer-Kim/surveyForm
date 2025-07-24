@@ -1,38 +1,38 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import FormBuilderPage from "./pages/FormBuilderPage";
-import ResponsePage from "./pages/ResponsePage";
-import MainLayout from "./components/layouts/MainLayout";
-import HomePage from "./pages/HomePage"; // HomePage import
-import NavBar from "./components/navbar/NavBar";
-import MyFormList from "@/pages/MyFormList"; // 경로에 맞게 조정
-import ResultPage from "@/pages/ResultPage"; // 경로에 맞게 조정
-import SignIn from "@/pages/auth/sign-in";
-import SignUp from "@/pages/auth/sign-up";
-import { NAVBAR_PADDING_TOP_CLASS } from "./constants/layout";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import FormBuilderPage from './pages/FormBuilderPage';
+import ResponsePage from './pages/ResponsePage';
+import MainLayout from './components/layouts/MainLayout';
+import HomePage from './pages/HomePage'; // HomePage import
+import NavBar from './components/navbar/NavBar';
+import MyFormList from '@/pages/MyFormList'; // 경로에 맞게 조정
+import ResultPage from '@/pages/ResultPage'; // 경로에 맞게 조정
+import SignIn from '@/pages/auth/sign-in';
+import SignUp from '@/pages/auth/sign-up';
+import { NAVBAR_PADDING_TOP_CLASS } from './constants/layout';
 
 function App() {
-    return (
-        <BrowserRouter>
-            <NavBar />
-            <main className={NAVBAR_PADDING_TOP_CLASS}>
-                <MainLayout>
-                    <Routes>
-                        <Route path="/" element={<HomePage />} />
-                        {/* 첫 화면을 HomePage로 변경 */}
-                        <Route path="/builder/new" element={<FormBuilderPage />} />
-                        {/* 새 설문 생성 경로 */}
-                        <Route path="/builder/:formId" element={<FormBuilderPage />} />
-                        {/* 설문 수정 경로 */}
-                        <Route path="/responses/:formId" element={<ResponsePage />} />
-                        <Route path="/list" element={<MyFormList />} />
-                        <Route path="/results/:formId" element={<ResultPage />} />
-                        <Route path="/sign-in" element={<SignIn />} />
-                        <Route path="/sign-up" element={<SignUp />} />
-                    </Routes>
-                </MainLayout>
-            </main>
-        </BrowserRouter>
-    );
+  return (
+    <BrowserRouter>
+      <NavBar />
+      <main className={NAVBAR_PADDING_TOP_CLASS}>
+        <MainLayout>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            {/* 첫 화면을 HomePage로 변경 */}
+            <Route path="/builder/new" element={<FormBuilderPage />} />
+            {/* 새 설문 생성 경로 */}
+            <Route path="/builder/:formId" element={<FormBuilderPage />} />
+            {/* 설문 수정 경로 */}
+            <Route path="/responses/:formId" element={<ResponsePage />} />
+            <Route path="/list" element={<MyFormList />} />
+            <Route path="/results/:formId" element={<ResultPage />} />
+            <Route path="/sign-in" element={<SignIn />} />
+            <Route path="/sign-up" element={<SignUp />} />
+          </Routes>
+        </MainLayout>
+      </main>
+    </BrowserRouter>
+  );
 }
 
 export default App;
