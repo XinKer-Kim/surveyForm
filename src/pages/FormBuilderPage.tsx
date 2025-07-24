@@ -1,34 +1,33 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import Question from '@/components/form/Question';
-import { supabase } from '@/supabaseClient';
-import QuestionTitle from '@/components/form/QuestionTitle';
-import { v4 as uuidv4 } from 'uuid';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import Question from "@/components/form/Question";
+import { supabase } from "@/supabaseClient";
+import QuestionTitle from "@/components/form/QuestionTitle";
+import { v4 as uuidv4 } from "uuid";
 
 const FormBuilderPage = () => {
   const { formId } = useParams(); // formId 파라미터 가져오기
   const navigate = useNavigate();
   const [formElements, setFormElements] = useState<any[]>([]); // 폼 요소 상태 관리
-  const [title, setTitle] = useState(''); // 폼 제목
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState(""); // 폼 제목
+  const [description, setDescription] = useState("");
 
   useEffect(() => {
-    if (formId && formId !== 'new') {
-      console.log('폼 수정 모드');
+    if (formId && formId !== "new") {
+      console.log("폼 수정 모드");
       const loadForm = async () => {
         const { data: form } = await supabase
-          .from('forms')
-          .select('*')
-          .eq('id', formId)
+          .from("forms")
+          .select("*")
+          .eq("id", formId)
           .single();
-        console.log('불러온 form 데이터:', form);
+        console.log("불러온 form 데이터:", form);
 
         const { data: questions } = await supabase
-          .from('questions')
-          .select('*')
-          .eq('form_id', formId)
-          .order('order_number', { ascending: true });
-
+          .from("questions")
+          .select("*")
+          .eq("form_id", formId)
+          .order("order_number", { ascending: true });
         setTitle(form.title);
         setDescription(form.description);
         setFormElements(questions || []);
@@ -36,10 +35,10 @@ const FormBuilderPage = () => {
 
       loadForm();
     } else {
-      console.log('신규 폼 생성 모드');
+      console.log("신규 폼 생성 모드");
       setFormElements([]); // 새 설문
-      setTitle('');
-      setDescription('');
+      setTitle("");
+      setDescription("");
     }
   }, [formId]);
 
@@ -48,8 +47,8 @@ const FormBuilderPage = () => {
       ...formElements,
       {
         id: uuidv4(), // ✅ 고유 ID 부여
-        type: 'text_short',
-        text: '',
+        type: "text_short",
+        text: "",
         order_number: formElements.length + 1,
         is_required: false,
       },
@@ -57,18 +56,18 @@ const FormBuilderPage = () => {
   };
 
   const handleAddPage = () => {
-    console.log('페이지 추가');
+    console.log("페이지 추가");
   };
 
   const handleSaveForm = async () => {
     let resolvedFormId = formId;
 
     // 신규 폼이라면 먼저 insert
-    if (formId === 'new') {
+    if (formId === "new") {
       const { data: formData, error: formError } = await supabase
-        .from('forms')
+        .from("forms")
         .insert({
-          user_id: '1dd927e3-2b9d-4d7a-a23d-578e1934bac3', // ✅ 실제 유저 ID로 교체 예정
+          user_id: "1dd927e3-2b9d-4d7a-a23d-578e1934bac3", // ✅ 실제 유저 ID로 교체 예정
           title,
           description,
         })
@@ -76,8 +75,8 @@ const FormBuilderPage = () => {
         .single();
 
       if (formError || !formData) {
-        console.error('폼 생성 실패:', formError);
-        alert('폼 저장 실패');
+        console.error("폼 생성 실패:", formError);
+        alert("폼 저장 실패");
         return;
       }
 
@@ -86,7 +85,7 @@ const FormBuilderPage = () => {
 
     // 공통적으로 트랜잭션 기반 질문 저장
     const { error: saveError } = await supabase.rpc(
-      'save_form_with_questions',
+      "save_form_with_questions",
       {
         payload: {
           form_id: resolvedFormId,
@@ -104,19 +103,19 @@ const FormBuilderPage = () => {
     );
 
     if (saveError) {
-      console.error('질문 저장 실패:', saveError);
-      alert('질문 저장 중 오류가 발생했습니다.');
+      console.error("질문 저장 실패:", saveError);
+      alert("질문 저장 중 오류가 발생했습니다.");
       return;
     }
 
-    alert('폼 저장 완료!');
-    navigate('/list');
+    alert("폼 저장 완료!");
+    navigate("/list");
   };
 
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">
-        {formId === 'new' ? '새 설문 만들기' : '설문 수정'}
+        {formId === "new" ? "새 설문 만들기" : "설문 수정"}
       </h1>
       <div className="mb-4">
         <QuestionTitle

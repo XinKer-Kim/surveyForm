@@ -12,6 +12,8 @@ import {
 import { Input } from '../ui/input';
 import DateConfigRow from './DateConfigRow';
 import { DialogDescription } from '@radix-ui/react-dialog';
+import { Label } from '../ui/label';
+import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
 
 interface QuestionTitleProps {
   handleAddInput: () => void;
