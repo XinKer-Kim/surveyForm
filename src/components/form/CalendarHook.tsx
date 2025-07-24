@@ -1,4 +1,3 @@
-// Calendar28 컴포넌트는 그대로 유지
 import * as React from "react";
 import { CalendarIcon } from "lucide-react";
 
@@ -12,27 +11,24 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-function formatDate(date: Date | undefined) {
-  if (!date) return "";
-  return date.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-function isValidDate(date: Date | undefined) {
-  if (!date) return false;
-  return !isNaN(date.getTime());
-}
-
-export function CalendarHook() {
+export function CalendarHook({
+  value,
+  onChange,
+}: {
+  value: Date | undefined;
+  onChange: (date: Date | undefined) => void;
+}) {
   const [open, setOpen] = React.useState(false);
-  const [date, setDate] = React.useState<Date | undefined>(
-    new Date("2025-06-01")
-  );
-  const [month, setMonth] = React.useState<Date | undefined>(date);
-  const [value, setValue] = React.useState(formatDate(date));
+  const [month, setMonth] = React.useState<Date | undefined>(value);
+
+  function formatDate(date: Date | undefined) {
+    if (!date) return "";
+    return date.toLocaleDateString("en-US", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    });
+  }
 
   return (
     <div className="flex flex-col gap-3">
@@ -42,14 +38,13 @@ export function CalendarHook() {
       <div className="relative flex gap-2">
         <Input
           id="date"
-          value={value}
+          value={formatDate(value)}
           placeholder="June 01, 2025"
           className="bg-background pr-10"
           onChange={(e) => {
             const date = new Date(e.target.value);
-            setValue(e.target.value);
-            if (isValidDate(date)) {
-              setDate(date);
+            if (!isNaN(date.getTime())) {
+              onChange(date);
               setMonth(date);
             }
           }}
@@ -79,13 +74,12 @@ export function CalendarHook() {
           >
             <Calendar
               mode="single"
-              selected={date}
+              selected={value}
               captionLayout="dropdown"
               month={month}
               onMonthChange={setMonth}
               onSelect={(date) => {
-                setDate(date);
-                setValue(formatDate(date));
+                onChange(date);
                 setOpen(false);
               }}
             />
