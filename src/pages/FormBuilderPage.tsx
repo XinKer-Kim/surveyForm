@@ -104,7 +104,15 @@ const FormBuilderPage = () => {
 
     if (saveError) {
       console.error("질문 저장 실패:", saveError);
-      alert("질문 저장 중 오류가 발생했습니다.");
+
+      if (saveError.code === "23503") {
+        alert(
+          "이미 응답이 존재하는 질문은 삭제하거나 유형을 바꿀 수 없습니다."
+        );
+      } else {
+        alert("폼 저장 중 오류가 발생했습니다.");
+      }
+
       return;
     }
 
