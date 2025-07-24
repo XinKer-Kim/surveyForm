@@ -28,7 +28,6 @@ const FormBuilderPage = () => {
           .select("*")
           .eq("form_id", formId)
           .order("order_number", { ascending: true });
-
         setTitle(form.title);
         setDescription(form.description);
         setFormElements(questions || []);
