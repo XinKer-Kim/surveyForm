@@ -58,12 +58,14 @@ const FormBuilderPage = () => {
   };
 
   const handleSaveForm = async () => {
+    let resolvedFormId = formId;
+
+    // 신규 폼이라면 먼저 insert
     if (formId === 'new') {
-      // 1. 폼 생성
       const { data: formData, error: formError } = await supabase
         .from('forms')
         .insert({
-          user_id: '1dd927e3-2b9d-4d7a-a23d-578e1934bac3', // 하드코딩된 테스트 유저
+          user_id: '1dd927e3-2b9d-4d7a-a23d-578e1934bac3', // ✅ 실제 유저 ID로 교체 예정
           title,
           description,
         })
@@ -71,45 +73,40 @@ const FormBuilderPage = () => {
         .single();
 
       if (formError || !formData) {
+        console.error('폼 생성 실패:', formError);
         alert('폼 저장 실패');
         return;
       }
 
-      // 2. 질문 저장
-      const questionsToInsert = formElements.map((q, i) => ({
-        ...q,
-        form_id: formData.id,
-        order_number: i + 1,
-      }));
-
-      await supabase.from('questions').insert(questionsToInsert);
-    } else {
-      // 수정 모드 (questions는 재업로드 방식)
-      await supabase
-        .from('forms')
-        .update({ title, description })
-        .eq('id', formId);
-
-      await supabase.from('questions').delete().eq('form_id', formId);
-
-      const questionsToInsert = formElements.map((q, i) => ({
-        ...q,
-        form_id: formId,
-        order_number: i + 1,
-      }));
-
-      const { error: insertError } = await supabase
-        .from('questions')
-        .insert(questionsToInsert);
-
-      if (insertError) {
-        console.error('질문 저장 실패:', insertError);
-        alert('질문 저장 중 오류가 발생했습니다.');
-        return;
-      }
+      resolvedFormId = formData.id;
     }
 
-    alert('저장 완료!');
+    // 공통적으로 트랜잭션 기반 질문 저장
+    const { error: saveError } = await supabase.rpc(
+      'save_form_with_questions',
+      {
+        payload: {
+          form_id: resolvedFormId,
+          title,
+          description,
+          questions: formElements.map((q, i) => ({
+            id: q.id,
+            text: q.text,
+            type: q.type,
+            order_number: i + 1,
+            required: q.required ?? false,
+          })),
+        },
+      }
+    );
+
+    if (saveError) {
+      console.error('질문 저장 실패:', saveError);
+      alert('질문 저장 중 오류가 발생했습니다.');
+      return;
+    }
+
+    alert('폼 저장 완료!');
     navigate('/list');
   };
 
