@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { supabase } from "@/lib/supabase";
 
 import {
   Form,
@@ -16,28 +17,34 @@ import { Button } from "@/components/ui/button";
 import { CalendarHook } from "@/components/form/CalendarHook";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-
-const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "이름은 최소 2자 이상입니다.",
-  }),
-  email: z.email({
-    message: "올바른 형식의 이메일 주소를 입력해주세요.",
-  }),
-  password: z.string().min(8, {
-    message: "비밀번호는 최소 8자 이상입니다.",
-  }),
-  confirmPassword: z.string().min(8, {
-    message: "비밀번호를 확인 후 입력해주세요.",
-  }),
-  gender: z
-    .enum(["male", "female", "undefined"])
-    .refine((val) => val !== undefined, {
-      message: "성별을 선택해주세요.",
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router";
+const formSchema = z
+  .object({
+    username: z.string().min(2, {
+      message: "이름은 최소 2자 이상입니다.",
     }),
-});
+    email: z.email({
+      message: "올바른 형식의 이메일 주소를 입력해주세요.",
+    }),
+    password: z.string().min(8, {
+      message: "비밀번호는 최소 8자 이상입니다.",
+    }),
+    confirmPassword: z.string(),
+    gender: z.enum(["male", "female", "undefined"]),
+    birthdate: z
+      .date()
+      .refine((d) => d instanceof Date && !isNaN(d.getTime()), {
+        message: "생년월일을 선택해주세요.",
+      }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "비밀번호가 일치하지 않습니다.",
+    path: ["confirmPassword"],
+  });
 
 function SignUp() {
+  const navigate = useNavigate();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,11 +53,49 @@ function SignUp() {
       password: "",
       confirmPassword: "",
       gender: "male",
+      birthdate: undefined,
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log("제출됨:", values);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    const { email, password, username, gender, birthdate } = values;
+
+    try {
+      const { data: authData, error: signUpError } = await supabase.auth.signUp(
+        {
+          email,
+          password,
+        }
+      );
+
+      if (signUpError) throw signUpError;
+
+      // authUser가 존재하면 추가 정보 저장
+      const userId = authData.user?.id;
+      if (userId) {
+        const { error: insertError } = await supabase.from("userinfo").insert({
+          id: userId,
+          username,
+          gender,
+          birthdate: birthdate,
+        });
+
+        if (insertError) throw insertError;
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: "회원가입 성공!",
+      });
+      navigate("/sign-in");
+    } catch (error: any) {
+      console.error(error);
+      Swal.fire({
+        icon: "error",
+        title: "회원가입 실패",
+        text: error.message || "문제가 발생했습니다. 다시 시도해주세요.",
+      });
+    }
   };
 
   return (
@@ -60,7 +105,6 @@ function SignUp() {
         className="space-y-6 w-full max-w-sm mx-auto mt-10"
       >
         <FormField
-          control={form.control}
           name="username"
           render={({ field }) => (
             <FormItem>
@@ -73,7 +117,6 @@ function SignUp() {
           )}
         />
         <FormField
-          control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
@@ -87,7 +130,6 @@ function SignUp() {
         />
 
         <FormField
-          control={form.control}
           name="password"
           render={({ field }) => (
             <FormItem className="relative">
@@ -106,14 +148,13 @@ function SignUp() {
         />
 
         <FormField
-          control={form.control}
           name="confirmPassword"
           render={({ field }) => (
             <FormItem className="relative">
               <FormLabel>비밀번호 확인</FormLabel>
               <FormControl>
                 <Input
-                  type="confirmPassword"
+                  type="Password"
                   placeholder="비밀번호 확인란을 입력하세요."
                   {...field}
                 />
@@ -125,7 +166,6 @@ function SignUp() {
         />
 
         <FormField
-          control={form.control}
           name="gender"
           render={({ field }) => (
             <FormItem>
@@ -161,7 +201,18 @@ function SignUp() {
           )}
         />
 
-        <CalendarHook />
+        <FormField
+          name="birthdate"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>생년월일을 선택해주세요.</FormLabel>
+              <FormControl>
+                <CalendarHook value={field.value} onChange={field.onChange} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <Button type="submit" className="w-full">
           가입하기
