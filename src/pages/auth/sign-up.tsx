@@ -242,7 +242,6 @@ function SignUp() {
         </Form>
       </CardContent>
     </Card>
-
   );
 }
 export default SignUp;
