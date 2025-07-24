@@ -1,14 +1,14 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import FormBuilderPage from "./pages/FormBuilderPage";
-import ResponsePage from "./pages/ResponsePage";
-import MainLayout from "./components/layouts/MainLayout";
-import HomePage from "./pages/HomePage"; // HomePage import
-import NavBar from "./components/navbar/NavBar";
-import MyFormList from "@/pages/MyFormList"; // 경로에 맞게 조정
-import ResultPage from "@/pages/ResultPage"; // 경로에 맞게 조정
-import SignIn from "@/pages/auth/sign-in";
-import SignUp from "@/pages/auth/sign-up";
-import { NAVBAR_PADDING_TOP_CLASS } from "./constants/layout";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import FormBuilderPage from './pages/FormBuilderPage';
+import ResponsePage from './pages/ResponsePage';
+import MainLayout from './components/layouts/MainLayout';
+import HomePage from './pages/HomePage'; // HomePage import
+import NavBar from './components/navbar/NavBar';
+import MyFormList from '@/pages/MyFormList'; // 경로에 맞게 조정
+import ResultPage from '@/pages/ResultPage'; // 경로에 맞게 조정
+import SignIn from '@/pages/auth/sign-in';
+import SignUp from '@/pages/auth/sign-up';
+import { NAVBAR_PADDING_TOP_CLASS } from './constants/layout';
 
 function App() {
   return (
