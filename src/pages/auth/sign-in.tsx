@@ -61,7 +61,6 @@ function SignIn() {
               <Link to={"/sign-up"} className="w-full cursor-pointer">
                 회원가입
               </Link>
-
             </CardFooter>
           </Card>
         </div>
