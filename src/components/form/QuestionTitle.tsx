@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Button } from '../ui/button';
+import { useState } from "react";
+import { Button } from "../ui/button";
 import {
   Dialog,
   DialogClose,
@@ -8,12 +8,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../ui/dialog';
-import { Input } from '../ui/input';
-import DateConfigRow from './DateConfigRow';
-import { DialogDescription } from '@radix-ui/react-dialog';
-import { Label } from '../ui/label';
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
+} from "../ui/dialog";
+import { Input } from "../ui/input";
+import DateConfigRow from "./DateConfigRow";
+import { DialogDescription } from "@radix-ui/react-dialog";
+import { Label } from "../ui/label";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 
 interface QuestionTitleProps {
   handleAddInput: () => void;
@@ -22,20 +22,20 @@ interface QuestionTitleProps {
 
 function QuestionTitle({ handleAddInput, handleAddPage }: QuestionTitleProps) {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-  const [startType, setStartType] = useState<string>('');
-  const [startDate, setStartDate] = useState<string>('');
-  const [startTime, setStartTime] = useState<string>('');
-  const [endType, setEndType] = useState<string>('');
-  const [endDate, setEndDate] = useState<string>('');
-  const [endTime, setEndTime] = useState<string>('');
-  const [dateConfig, setDateConfig] = useState<string>('');
+  const [startType, setStartType] = useState<string>("");
+  const [startDate, setStartDate] = useState<string>("");
+  const [startTime, setStartTime] = useState<string>("");
+  const [endType, setEndType] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
+  const [endTime, setEndTime] = useState<string>("");
+  const [dateConfig, setDateConfig] = useState<string>("");
 
   const handleDialogConfirm = () => {
     setDateConfig(
       `${
-        startDate === '' || startType !== 'custom' ? '바로 시작' : startDate
+        startDate === "" || startType !== "custom" ? "바로 시작" : startDate
       } ${startTime} ~ ${
-        endDate === '' || endType !== 'custom' ? '제한 없음' : endDate
+        endDate === "" || endType !== "custom" ? "제한 없음" : endDate
       } ${endTime}`
     );
 
@@ -78,12 +78,12 @@ function QuestionTitle({ handleAddInput, handleAddPage }: QuestionTitleProps) {
                 <div className="flex flex-col items-start gap-8">
                   <DateConfigRow
                     radioGroup={{
-                      label: '시작',
+                      label: "시작",
                       options: [
-                        { value: 'start', label: '즉시 시작' },
-                        { value: 'custom', label: '직접 설정' },
+                        { value: "start", label: "즉시 시작" },
+                        { value: "custom", label: "직접 설정" },
                       ],
-                      defaultValue: 'start',
+                      defaultValue: "start",
                       onValueChange: (value) => setStartType(value),
                     }}
                     dateType={startType}
@@ -94,12 +94,12 @@ function QuestionTitle({ handleAddInput, handleAddPage }: QuestionTitleProps) {
                   />
                   <DateConfigRow
                     radioGroup={{
-                      label: '종료',
+                      label: "종료",
                       options: [
-                        { value: 'noLimit', label: '제한 없음' },
-                        { value: 'custom', label: '직접 설정' },
+                        { value: "noLimit", label: "제한 없음" },
+                        { value: "custom", label: "직접 설정" },
                       ],
-                      defaultValue: 'noLimit',
+                      defaultValue: "noLimit",
                       onValueChange: (value) => setEndType(value),
                     }}
                     dateType={endType}
