@@ -26,6 +26,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 const formSchema = z
   .object({
     username: z.string().min(2, {
@@ -37,6 +38,7 @@ const formSchema = z
     password: z.string().min(8, {
       message: "비밀번호는 최소 8자 이상입니다.",
     }),
+
     confirmPassword: z.string(),
     gender: z.enum(["male", "female", "undefined"]),
     birthdate: z
@@ -240,6 +242,7 @@ function SignUp() {
         </Form>
       </CardContent>
     </Card>
+
   );
 }
 export default SignUp;
