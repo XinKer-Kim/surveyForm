@@ -15,7 +15,6 @@ import {
 import { ScrollArea } from "../ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/utils/dateUtils";
-import { SurveyPeriod } from "@/constants/survey";
 
 interface RadioGroupProps {
   label: string;
@@ -52,12 +51,10 @@ function DateConfigRow({
   formTime,
 }: DateConfigRowProps) {
   const parsedDate: Date | undefined =
-    formDate === "" || dateType !== SurveyPeriod.CUSTOM
+    formDate === "" || dateType !== "custom"
       ? undefined
       : new Date(formDate.replaceAll(". ", "-").slice(0, -1));
 
-  const parsedTime: string | undefined =
-    formDate === "" || dateType !== SurveyPeriod.CUSTOM ? undefined : formTime;
 
   // 라디오 그룹 상태 관리
   const [selectedValue, setSelectedValue] = useState<string | undefined>(
@@ -76,9 +73,7 @@ function DateConfigRow({
   const dateInput = useRef<HTMLButtonElement>(null);
 
   // 시간 선택 드롭다운 상태 관리
-  const [selectedTime, setSelectedTime] = useState<string | undefined>(
-    parsedTime
-  );
+  const [selectedTime, setSelectedTime] = useState<string>(formTime);
   const timeInput = useRef<HTMLButtonElement>(null);
 
   const handleValueChange = (value: string) => {
@@ -132,7 +127,7 @@ function DateConfigRow({
         </div>
 
         {/* '직접 설정' 체크 시 컴포넌트 활성화. */}
-        {selectedValue === SurveyPeriod.CUSTOM && (
+        {selectedValue === "custom" && (
           <div className="flex flex-col gap-2">
             {/* 캘린더 */}
             <div className="relative flex gap-2">
@@ -225,12 +220,14 @@ function DateConfigRow({
                       className={cn(
                         "cursor-pointer",
                         selectedTime === time ? "text-naver" : "text-black"
+
                       )}
                     >
                       <CheckIcon
                         className={cn(
                           "mr-2 h-4 w-4 text-naver",
                           selectedTime === time ? "opacity-100" : "opacity-0"
+
                         )}
                       />
                       {time}
