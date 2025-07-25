@@ -18,7 +18,18 @@ interface QuestionTitleProps {
   title: string;
   description: string;
   startDateTime: Date | undefined;
+  startDate: string;
+  startTime: string;
   endDateTime: Date | undefined;
+  endDate: string;
+  endTime: string;
+  handleTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleDescriptionChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleDateTime: () => void;
+  setStartDate: React.Dispatch<React.SetStateAction<string>>;
+  setStartTime: React.Dispatch<React.SetStateAction<string>>;
+  setEndDate: React.Dispatch<React.SetStateAction<string>>;
+  setEndTime: React.Dispatch<React.SetStateAction<string>>;
   handleAddInput: () => void;
   handleAddPage: () => void;
 }
@@ -27,7 +38,18 @@ function QuestionTitle({
   title,
   description,
   startDateTime,
+  startDate,
+  startTime,
   endDateTime,
+  endDate,
+  endTime,
+  handleTitleChange,
+  handleDescriptionChange,
+  handleDateTime,
+  setStartDate,
+  setStartTime,
+  setEndDate,
+  setEndTime,
   handleAddInput,
   handleAddPage,
 }: QuestionTitleProps) {
@@ -35,11 +57,11 @@ function QuestionTitle({
   const [startType, setStartType] = useState<string>(
     startDateTime ? "custom" : ""
   );
-  const [startDate, setStartDate] = useState<string>(formatDate(startDateTime));
-  const [startTime, setStartTime] = useState<string>(formatTime(startDateTime));
+  //   const [startDate, setStartDate] = useState<string>(formatDate(startDateTime));
+  //   const [startTime, setStartTime] = useState<string>(formatTime(startDateTime));
   const [endType, setEndType] = useState<string>(endDateTime ? "custom" : "");
-  const [endDate, setEndDate] = useState<string>(formatDate(endDateTime));
-  const [endTime, setEndTime] = useState<string>("");
+  //   const [endDate, setEndDate] = useState<string>(formatDate(endDateTime));
+  //   const [endTime, setEndTime] = useState<string>(formatTime(endDateTime));
 
   useEffect(() => {
     setStartType(startDateTime ? "custom" : "start");
@@ -63,6 +85,13 @@ function QuestionTitle({
   }, [startType, startDate, startTime, endType, endDate, endTime]);
 
   const handleDialogConfirm = () => {
+    // setStartType
+    // setStartDate
+    // setStartTime
+    // setEndType
+    // setEndDate
+    // setEndTime
+
     if (isDialogOpen) setIsDialogOpen(false);
   };
 
@@ -76,12 +105,14 @@ function QuestionTitle({
             className="p-0 border-x-0 border-t-0 border-b-2 border-transparent shadow-none rounded-none !text-lg font-bold placeholder:text-neutral-300 focus-visible:ring-0 focus-visible:ring-offset-0 hover:border-neutral-300"
             placeholder="설문 제목 입력"
             defaultValue={title}
+            onChange={handleTitleChange}
           />
           <Input
             type="text"
             className="p-0 border-x-0 border-t-0 border-b-2 border-transparent shadow-none rounded-none !text-sm font-base placeholder:text-neutral-300 focus-visible:ring-0 focus-visible:ring-offset-0 hover:border-neutral-300"
             placeholder="설명 입력"
             defaultValue={description}
+            onChange={handleDescriptionChange}
           />
           <div className="flex flex-row items-center justify-start gap-2 ">
             <p className="w-20 text-xs">설문 기간</p>

@@ -5,11 +5,13 @@ import Question from "@/components/form/Question";
 import { supabase } from "@/supabaseClient";
 import QuestionTitle from "@/components/form/QuestionTitle";
 import { v4 as uuidv4 } from "uuid";
+import { formatDate, formatTime, parseDateTime } from "@/utils/dateUtils";
 
 const FormBuilderPage = () => {
   const { formId, templateId } = useParams();
   const navigate = useNavigate();
-  const [formElements, setFormElements] = useState<any[]>([]);
+
+  // Questiontitle 상태 관리
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -72,6 +74,16 @@ const FormBuilderPage = () => {
     }
   }, [formId]);
 
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setTitle(e.target.value);
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setDescription(e.target.value);
+
+  const handleDateTime = () => {
+    //
+  };
+
   const handleAddInput = () => {
     setFormElements([
       ...formElements,
@@ -120,6 +132,8 @@ const FormBuilderPage = () => {
           form_id: resolvedFormId,
           title,
           description,
+          start_time: parseDateTime(startDate, startTime),
+          end_time: parseDateTime(endDate, endTime),
           questions: formElements.map((q, i) => ({
             id: q.id,
             text: q.text,
@@ -167,7 +181,18 @@ const FormBuilderPage = () => {
           title={title}
           description={description}
           startDateTime={startDateTime}
+          startDate={startDate}
+          startTime={startTime}
           endDateTime={endDateTime}
+          endDate={endDate}
+          endTime={endTime}
+          handleTitleChange={handleTitleChange}
+          handleDescriptionChange={handleDescriptionChange}
+          handleDateTime={handleDateTime}
+          setStartDate={setStartDate}
+          setStartTime={setStartTime}
+          setEndDate={setEndDate}
+          setEndTime={setEndTime}
           handleAddInput={handleAddInput}
           handleAddPage={() => {}}
         />

@@ -1,3 +1,6 @@
+import { parse } from "date-fns";
+import { ko } from "date-fns/locale";
+
 /**
  * Date 객체를 'YYYY. MM. DD.' 형식의 string 타입으로 변환.
  * @param date - 포맷 대상 Date 객체
@@ -34,4 +37,24 @@ export const formatTime = (date: Date | string | undefined): string => {
     hour: "2-digit",
     minute: "2-digit",
   });
+};
+
+/**
+ * 'yyyy. MM. dd.' 형식의 날짜 문자열과 'aaaa hh:mm' 형식의 시간 문자열을 하나의 표준 Date 객체로 변환.
+ * @param dateStr - 날짜 문자열 (예: '2025. 07. 25.')
+ * @param timeStr - 시간 문자열 (예: '오후 02:30')
+ * @returns {Date} 변환된 Date 객체
+ */
+export const parseDateTime = (dateStr: string, timeStr: string): Date => {
+  const combinedStr = `${dateStr} ${timeStr}`;
+  const formatPattern = "yyyy. MM. dd. aaaa hh:mm"; // aaaa: 오전/오후
+
+  const dateObject = parse(
+    combinedStr,
+    formatPattern,
+    new Date(), // 파싱 기준 날짜.
+    { locale: ko } // '오후' 같은 한국어 표기 인식을 위한 로케일 설정.
+  );
+
+  return dateObject;
 };
