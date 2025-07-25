@@ -13,25 +13,21 @@ import {
 import { Input } from "../ui/input";
 import DateConfigRow from "./DateConfigRow";
 import { formatDate, formatTime } from "@/utils/dateUtils";
-import { SurveyPeriod } from "@/constants/survey";
 
 interface QuestionTitleProps {
   title: string;
   description: string;
-  startType: string;
   startDateTime: Date | undefined;
   startDate: string;
   startTime: string;
-  endType: string;
   endDateTime: Date | undefined;
   endDate: string;
   endTime: string;
   handleTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleDescriptionChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  setStartType: React.Dispatch<React.SetStateAction<string>>;
+  handleDateTime: () => void;
   setStartDate: React.Dispatch<React.SetStateAction<string>>;
   setStartTime: React.Dispatch<React.SetStateAction<string>>;
-  setEndType: React.Dispatch<React.SetStateAction<string>>;
   setEndDate: React.Dispatch<React.SetStateAction<string>>;
   setEndTime: React.Dispatch<React.SetStateAction<string>>;
   handleAddInput: () => void;
@@ -41,84 +37,60 @@ interface QuestionTitleProps {
 function QuestionTitle({
   title,
   description,
-  startType,
   startDateTime,
   startDate,
   startTime,
-  endType,
   endDateTime,
   endDate,
   endTime,
   handleTitleChange,
   handleDescriptionChange,
-  setStartType,
+  handleDateTime,
   setStartDate,
   setStartTime,
-  setEndType,
   setEndDate,
   setEndTime,
   handleAddInput,
   handleAddPage,
 }: QuestionTitleProps) {
-  // Dialog 내에서 관리되는 임시 상태 변수들.
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-  const [startTypeState, setStartTypeState] = useState<string>(
-    startDateTime ? SurveyPeriod.CUSTOM : SurveyPeriod.START
+  const [startType, setStartType] = useState<string>(
+    startDateTime ? "custom" : ""
   );
-  const [startDateState, setStartDateState] = useState<string>(
-    formatDate(startDateTime)
-  );
-  const [startTimeState, setStartTimeState] = useState<string>(
-    formatTime(startDateTime)
-  );
-  const [endTypeState, setEndTypeState] = useState<string>(
-    endDateTime ? SurveyPeriod.CUSTOM : SurveyPeriod.UNLIMITED
-  );
-  const [endDateState, setEndDateState] = useState<string>(
-    formatDate(endDateTime)
-  );
-  const [endTimeState, setEndTimeState] = useState<string>(
-    formatTime(endDateTime)
-  );
+  //   const [startDate, setStartDate] = useState<string>(formatDate(startDateTime));
+  //   const [startTime, setStartTime] = useState<string>(formatTime(startDateTime));
+  const [endType, setEndType] = useState<string>(endDateTime ? "custom" : "");
+  //   const [endDate, setEndDate] = useState<string>(formatDate(endDateTime));
+  //   const [endTime, setEndTime] = useState<string>(formatTime(endDateTime));
 
   useEffect(() => {
-    setStartType(startType);
+    setStartType(startDateTime ? "custom" : "start");
     setStartDate(formatDate(startDateTime));
     setStartTime(formatTime(startDateTime));
-
-    setStartTypeState(startType);
-    setStartDateState(formatDate(startDateTime));
-    setStartTimeState(formatTime(startDateTime));
-  }, [startDateTime, isDialogOpen]);
+  }, [startDateTime]);
 
   useEffect(() => {
-    setEndType(endType);
+    setEndType(endDateTime ? "custom" : "unlimited");
     setEndDate(formatDate(endDateTime));
     setEndTime(formatTime(endDateTime));
-
-    setEndTypeState(endType);
-    setEndDateState(formatDate(endDateTime));
-    setEndTimeState(formatTime(endDateTime));
-  }, [endDateTime, isDialogOpen]);
+  }, [endDateTime]);
 
   const dateConfig = useMemo(() => {
     const startPart =
-      startType !== SurveyPeriod.CUSTOM
-        ? "즉시 시작"
-        : `${startDate} ${startTime}`;
+      startType !== "custom" ? "즉시 시작" : `${startDate} ${startTime}`;
     const endPart =
-      endType !== SurveyPeriod.CUSTOM ? "제한 없음" : `${endDate} ${endTime}`;
+      endType !== "custom" ? "제한 없음" : `${endDate} ${endTime}`;
 
     return `${startPart} ~ ${endPart}`;
   }, [startType, startDate, startTime, endType, endDate, endTime]);
 
   const handleDialogConfirm = () => {
-    setStartType(startTypeState);
-    setStartDate(startDateState);
-    setStartTime(startTimeState);
-    setEndType(endTypeState);
-    setEndDate(endDateState);
-    setEndTime(endTimeState);
+    // setStartType
+    // setStartDate
+    // setStartTime
+    // setEndType
+    // setEndDate
+    // setEndTime
 
     if (isDialogOpen) setIsDialogOpen(false);
   };
@@ -142,7 +114,6 @@ function QuestionTitle({
             defaultValue={description}
             onChange={handleDescriptionChange}
           />
-          {/* 설문 기간 Dialog */}
           <div className="flex flex-row items-center justify-start gap-2 ">
             <p className="w-20 text-xs">설문 기간</p>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -166,33 +137,33 @@ function QuestionTitle({
                     radioGroup={{
                       label: "시작",
                       options: [
-                        { value: SurveyPeriod.START, label: "즉시 시작" },
-                        { value: SurveyPeriod.CUSTOM, label: "직접 설정" },
+                        { value: "start", label: "즉시 시작" },
+                        { value: "custom", label: "직접 설정" },
                       ],
-                      defaultValue: SurveyPeriod.START,
-                      onValueChange: (value) => setStartTypeState(value),
+                      defaultValue: "start",
+                      onValueChange: (value) => setStartType(value),
                     }}
-                    dateType={startTypeState}
-                    formDate={startDateState}
-                    formTime={startTimeState}
-                    onSetDateChange={setStartDateState}
-                    onSetTimeChange={setStartTimeState}
+                    dateType={startType}
+                    formDate={startDate}
+                    formTime={startTime}
+                    onSetDateChange={setStartDate}
+                    onSetTimeChange={setStartTime}
                   />
                   <DateConfigRow
                     radioGroup={{
                       label: "종료",
                       options: [
-                        { value: SurveyPeriod.UNLIMITED, label: "제한 없음" },
-                        { value: SurveyPeriod.CUSTOM, label: "직접 설정" },
+                        { value: "unlimited", label: "제한 없음" },
+                        { value: "custom", label: "직접 설정" },
                       ],
-                      defaultValue: SurveyPeriod.UNLIMITED,
-                      onValueChange: (value) => setEndTypeState(value),
+                      defaultValue: "unlimited",
+                      onValueChange: (value) => setEndType(value),
                     }}
-                    dateType={endTypeState}
-                    formDate={endDateState}
-                    formTime={endTimeState}
-                    onSetDateChange={setEndDateState}
-                    onSetTimeChange={setEndTimeState}
+                    dateType={endType}
+                    formDate={endDate}
+                    formTime={endTime}
+                    onSetDateChange={setEndDate}
+                    onSetTimeChange={setEndTime}
                   />
                 </div>
                 <DialogFooter className="sm:justify-start">
