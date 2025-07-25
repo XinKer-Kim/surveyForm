@@ -1,6 +1,15 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { templates } from "@/constants/templates";
 
 function HomePage() {
+  const navigate = useNavigate();
+
+  const handleSelectTemplate = (templateId: string) => {
+    navigate(`/create/template/${templateId}`);
+  };
+
   return (
     <div className="flex flex-col gap-4 w-full min-w-[800px]">
       <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">
