@@ -156,6 +156,10 @@ const FormBuilderPage = () => {
       </h1>
       <div className="mb-4">
         <QuestionTitle
+          title={title}
+          description={description}
+          startDateTime={startDateTime}
+          endDateTime={endDateTime}
           handleAddInput={handleAddInput}
           handleAddPage={() => {}}
         />
