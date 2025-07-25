@@ -6,6 +6,7 @@ import { supabase } from "@/supabaseClient";
 import QuestionTitle from "@/components/form/QuestionTitle";
 import { v4 as uuidv4 } from "uuid";
 import { formatDate, formatTime, parseDateTime } from "@/utils/dateUtils";
+import { SurveyPeriod } from "@/constants/survey";
 
 const FormBuilderPage = () => {
   const { formId, templateId } = useParams();
@@ -42,12 +43,12 @@ const FormBuilderPage = () => {
           .from("questions")
           .select(
             `
-    id, text, type, order_number, required, is_required,
-    options (
-      id, label, value, order_number
-    ),
-    answers(id)
-  `
+              id, text, type, order_number, required, is_required,
+              options (
+                id, label, value, order_number
+              ),
+              answers(id)
+            `
           )
           .eq("form_id", formId)
           .order("order_number", { ascending: true });
@@ -80,10 +81,6 @@ const FormBuilderPage = () => {
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setDescription(e.target.value);
 
-  const handleDateTime = () => {
-    //
-  };
-
   const handleAddInput = () => {
     setFormElements([
       ...formElements,
@@ -104,6 +101,8 @@ const FormBuilderPage = () => {
 
   const handleSaveForm = async () => {
     let resolvedFormId = formId;
+
+    console.log(`${startType} ${endType}`);
 
     if (formId === "new" || isTemplateMode) {
       const { data: formData, error: formError } = await supabase
@@ -132,8 +131,14 @@ const FormBuilderPage = () => {
           form_id: resolvedFormId,
           title,
           description,
-          start_time: parseDateTime(startDate, startTime),
-          end_time: parseDateTime(endDate, endTime),
+          start_time:
+            startType === SurveyPeriod.CUSTOM
+              ? parseDateTime(startDate, startTime)
+              : null,
+          end_time:
+            endType === SurveyPeriod.CUSTOM
+              ? parseDateTime(endDate, endTime)
+              : null,
           questions: formElements.map((q, i) => ({
             id: q.id,
             text: q.text,
@@ -180,17 +185,20 @@ const FormBuilderPage = () => {
         <QuestionTitle
           title={title}
           description={description}
+          startType={startType}
           startDateTime={startDateTime}
           startDate={startDate}
           startTime={startTime}
+          endType={endType}
           endDateTime={endDateTime}
           endDate={endDate}
           endTime={endTime}
           handleTitleChange={handleTitleChange}
           handleDescriptionChange={handleDescriptionChange}
-          handleDateTime={handleDateTime}
+          setStartType={setStartType}
           setStartDate={setStartDate}
           setStartTime={setStartTime}
+          setEndType={setEndType}
           setEndDate={setEndDate}
           setEndTime={setEndTime}
           handleAddInput={handleAddInput}
