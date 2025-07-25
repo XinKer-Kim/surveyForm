@@ -6,6 +6,7 @@ import { supabase } from "@/supabaseClient";
 import QuestionTitle from "@/components/form/QuestionTitle";
 import { v4 as uuidv4 } from "uuid";
 import { formatDate, formatTime, parseDateTime } from "@/utils/dateUtils";
+import { SurveyPeriod } from "@/constants/survey";
 
 const FormBuilderPage = () => {
   const { formId, templateId } = useParams();
@@ -14,9 +15,11 @@ const FormBuilderPage = () => {
   // Questiontitle 상태 관리
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [startType, setStartType] = useState<string>(SurveyPeriod.START);
   const [startDateTime, setStartDateTime] = useState<Date | undefined>();
   const [startDate, setStartDate] = useState<string>(formatDate(startDateTime));
   const [startTime, setStartTime] = useState<string>(formatTime(startDateTime));
+  const [endType, setEndType] = useState<string>(SurveyPeriod.UNLIMITED);
   const [endDateTime, setEndDateTime] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<string>(formatDate(endDateTime));
   const [endTime, setEndTime] = useState<string>(formatTime(endDateTime));
@@ -51,12 +54,12 @@ const FormBuilderPage = () => {
           .from("questions")
           .select(
             `
-    id, text, type, order_number, required, is_required,
-    options (
-      id, label, value, order_number
-    ),
-    answers(id)
-  `
+              id, text, type, order_number, required, is_required,
+              options (
+                id, label, value, order_number
+              ),
+              answers(id)
+            `
           )
           .eq("form_id", formId)
           .order("order_number", { ascending: true });
@@ -67,7 +70,13 @@ const FormBuilderPage = () => {
         setTitle(form.title);
         setDescription(form.description);
         setStartDateTime(form.start_time);
+        setStartType(
+          form.start_time ? SurveyPeriod.CUSTOM : SurveyPeriod.START
+        );
         setEndDateTime(form.end_time);
+        setEndType(
+          form.end_time ? SurveyPeriod.CUSTOM : SurveyPeriod.UNLIMITED
+        );
         setFormElements(questionsWithFlags);
       };
 
@@ -92,10 +101,6 @@ const FormBuilderPage = () => {
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setDescription(e.target.value);
 
-  const handleDateTime = () => {
-    //
-  };
-
   const handleAddInput = () => {
     setFormElements([
       ...formElements,
@@ -116,6 +121,8 @@ const FormBuilderPage = () => {
 
   const handleSaveForm = async () => {
     let resolvedFormId = formId;
+
+    console.log(`${startType} ${endType}`);
 
     if (formId === "new" || isTemplateMode) {
       const { data: formData, error: formError } = await supabase
@@ -144,8 +151,14 @@ const FormBuilderPage = () => {
           form_id: resolvedFormId,
           title,
           description,
-          start_time: parseDateTime(startDate, startTime),
-          end_time: parseDateTime(endDate, endTime),
+          start_time:
+            startType === SurveyPeriod.CUSTOM
+              ? parseDateTime(startDate, startTime)
+              : null,
+          end_time:
+            endType === SurveyPeriod.CUSTOM
+              ? parseDateTime(endDate, endTime)
+              : null,
           questions: formElements.map((q, i) => ({
             id: q.id,
             text: q.text,
@@ -192,17 +205,20 @@ const FormBuilderPage = () => {
         <QuestionTitle
           title={title}
           description={description}
+          startType={startType}
           startDateTime={startDateTime}
           startDate={startDate}
           startTime={startTime}
+          endType={endType}
           endDateTime={endDateTime}
           endDate={endDate}
           endTime={endTime}
           handleTitleChange={handleTitleChange}
           handleDescriptionChange={handleDescriptionChange}
-          handleDateTime={handleDateTime}
+          setStartType={setStartType}
           setStartDate={setStartDate}
           setStartTime={setStartTime}
+          setEndType={setEndType}
           setEndDate={setEndDate}
           setEndTime={setEndTime}
           handleAddInput={handleAddInput}
