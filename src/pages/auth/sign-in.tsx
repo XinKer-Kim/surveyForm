@@ -24,14 +24,14 @@ import {
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/supabaseClient";
 
 const formSchema = z.object({
   email: z.email({
     message: "올바른 형식의 이메일 주소를 입력해주세요.",
   }),
-  password: z.string().min(8, {
-    message: "비밀번호는 최소 8자 이상입니다.",
+  password: z.string().min(4, {
+    message: "비밀번호는 최소 4자 이상입니다.",
   }),
 });
 
