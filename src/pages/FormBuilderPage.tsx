@@ -6,37 +6,60 @@ import QuestionTitle from "@/components/form/QuestionTitle";
 import { v4 as uuidv4 } from "uuid";
 
 const FormBuilderPage = () => {
-  const { formId } = useParams(); // formId 파라미터 가져오기
+  const { formId } = useParams();
   const navigate = useNavigate();
-  const [formElements, setFormElements] = useState<any[]>([]); // 폼 요소 상태 관리
-  const [title, setTitle] = useState(""); // 폼 제목
+  const [formElements, setFormElements] = useState<any[]>([]);
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+
+  type Option = {
+    id: string;
+    label: string;
+    value?: string;
+    order_number?: number;
+  };
 
   useEffect(() => {
     if (formId && formId !== "new") {
       console.log("폼 수정 모드");
+
       const loadForm = async () => {
+        // 폼 정보 불러오기
         const { data: form } = await supabase
           .from("forms")
           .select("*")
           .eq("id", formId)
           .single();
-        console.log("불러온 form 데이터:", form);
 
-        const { data: questions } = await supabase
+        setTitle(form?.title ?? "");
+        setDescription(form?.description ?? "");
+
+        // 질문 + 응답 존재 여부 포함해서 불러오기
+        const { data: rawQuestions } = await supabase
           .from("questions")
-          .select("*")
+          .select(
+            `
+    id, text, type, order_number, required, is_required,
+    options (
+      id, label, value, order_number
+    ),
+    answers(id)
+  `
+          )
           .eq("form_id", formId)
           .order("order_number", { ascending: true });
-        setTitle(form.title);
-        setDescription(form.description);
-        setFormElements(questions || []);
+
+        const questionsWithFlags = (rawQuestions ?? []).map((q) => ({
+          ...q,
+          hasAnswer: (q.answers ?? []).length > 0,
+        }));
+        setFormElements(questionsWithFlags);
       };
 
       loadForm();
     } else {
       console.log("신규 폼 생성 모드");
-      setFormElements([]); // 새 설문
+      setFormElements([]);
       setTitle("");
       setDescription("");
     }
@@ -46,28 +69,28 @@ const FormBuilderPage = () => {
     setFormElements([
       ...formElements,
       {
-        id: uuidv4(), // ✅ 고유 ID 부여
-        type: "text_short",
+        id: uuidv4(),
+        type: "radio", // ✅ 기본을 객관식으로 변경
         text: "",
+        required: false,
         order_number: formElements.length + 1,
-        is_required: false,
+        hasAnswer: false,
+        options: [
+          { id: uuidv4(), label: "" },
+          { id: uuidv4(), label: "" },
+        ],
       },
     ]);
-  };
-
-  const handleAddPage = () => {
-    console.log("페이지 추가");
   };
 
   const handleSaveForm = async () => {
     let resolvedFormId = formId;
 
-    // 신규 폼이라면 먼저 insert
     if (formId === "new") {
       const { data: formData, error: formError } = await supabase
         .from("forms")
         .insert({
-          user_id: "1dd927e3-2b9d-4d7a-a23d-578e1934bac3", // ✅ 실제 유저 ID로 교체 예정
+          user_id: "1dd927e3-2b9d-4d7a-a23d-578e1934bac3",
           title,
           description,
         })
@@ -83,7 +106,6 @@ const FormBuilderPage = () => {
       resolvedFormId = formData.id;
     }
 
-    // 공통적으로 트랜잭션 기반 질문 저장
     const { error: saveError } = await supabase.rpc(
       "save_form_with_questions",
       {
@@ -97,6 +119,13 @@ const FormBuilderPage = () => {
             type: q.type,
             order_number: i + 1,
             required: q.required ?? false,
+            options:
+              q.options?.map((opt, j) => ({
+                id: opt.id,
+                label: opt.label.trim() === "" ? null : opt.label,
+                value: opt.value ?? null,
+                order_number: j + 1,
+              })) ?? [],
           })),
         },
       }
@@ -128,13 +157,13 @@ const FormBuilderPage = () => {
       <div className="mb-4">
         <QuestionTitle
           handleAddInput={handleAddInput}
-          handleAddPage={handleAddPage}
+          handleAddPage={() => {}}
         />
       </div>
       <div>
         {formElements.map((element, index) => (
           <Question
-            key={index}
+            key={element.id}
             question={{ ...element, order_number: index + 1 }}
             onQuestionChange={(updatedQuestion) => {
               const newElements = [...formElements];
@@ -143,7 +172,11 @@ const FormBuilderPage = () => {
             }}
             onDuplicate={() => {
               const newElements = [...formElements];
-              newElements.splice(index + 1, 0, { ...element });
+              newElements.splice(index + 1, 0, {
+                ...element,
+                id: uuidv4(),
+                hasAnswer: false, // 복제된 건 응답 없음
+              });
               setFormElements(newElements);
             }}
             onDelete={() => {

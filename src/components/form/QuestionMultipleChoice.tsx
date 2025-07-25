@@ -1,21 +1,25 @@
 import { FC } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 
-interface Props {
-  options: string[];
+interface OptionItem {
+  id: string;
+  label: string;
+}
+
+interface QuestionMultipleChoiceProps {
+  options: OptionItem[];
   hasEtc: boolean;
   allowMultiple: boolean;
-  onOptionChange: (value: string, idx: number) => void;
+  onOptionChange: (label: string, idx: number) => void;
   onDeleteOption: (idx: number) => void;
   onAddOption: () => void;
   onToggleEtc: () => void;
   onToggleMultiple: () => void;
+  disabled?: boolean;
 }
 
-const QuestionMultipleChoice: FC<Props> = ({
+const QuestionMultipleChoice: FC<QuestionMultipleChoiceProps> = ({
   options,
   hasEtc,
   allowMultiple,
@@ -24,68 +28,59 @@ const QuestionMultipleChoice: FC<Props> = ({
   onAddOption,
   onToggleEtc,
   onToggleMultiple,
+  disabled,
 }) => {
   return (
-    <div className="space-y-3 mt-4">
+    <div className="space-y-2">
       {options.map((opt, idx) => (
-        <div key={idx} className="flex items-center gap-2">
+        <div key={opt.id} className="flex items-center gap-2">
           <Input
-            value={opt}
+            type="text"
+            value={opt.label}
             onChange={(e) => onOptionChange(e.target.value, idx)}
-            placeholder={`항목 ${idx + 1}`}
-            className="flex-1"
+            placeholder={`선택지 ${idx + 1}`} // ✅ 여기에!
+            disabled={disabled}
+            className="flex-grow"
           />
           <Button
             type="button"
-            size="icon"
-            variant="ghost"
+            variant="destructive"
+            size="sm"
             onClick={() => onDeleteOption(idx)}
-            className="text-gray-500 hover:text-red-500"
+            disabled={disabled}
           >
-            ✕
+            삭제
           </Button>
         </div>
       ))}
-
-      {hasEtc && (
-        <div className="flex items-center gap-2 text-muted-foreground italic">
-          <span>기타</span>
-          <Button
-            type="button"
-            size="icon"
-            variant="ghost"
-            onClick={onToggleEtc}
-            className="text-gray-500 hover:text-red-500"
-          >
-            ✕
-          </Button>
-        </div>
-      )}
-
-      <div className="flex items-center gap-3 mt-2">
-        <Button type="button" size="sm" variant="outline" onClick={onAddOption}>
-          + 항목 추가
+      <div className="flex gap-2 mt-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={onAddOption}
+          disabled={disabled}
+        >
+          + 선택지 추가
         </Button>
         <Button
           type="button"
-          size="sm"
           variant="ghost"
+          size="sm"
           onClick={onToggleEtc}
-          disabled={hasEtc}
+          disabled={disabled}
         >
-          ‘기타’ 추가
+          {hasEtc ? "✔ 기타 허용됨" : "기타 허용"}
         </Button>
-      </div>
-
-      <div className="flex items-center gap-4 mt-4">
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="multiple"
-            checked={allowMultiple}
-            onCheckedChange={onToggleMultiple}
-          />
-          <Label htmlFor="multiple">복수 선택 허용</Label>
-        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={onToggleMultiple}
+          disabled={disabled}
+        >
+          {allowMultiple ? "✔ 복수 선택 가능" : "복수 선택 허용"}
+        </Button>
       </div>
     </div>
   );

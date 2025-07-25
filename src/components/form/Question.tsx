@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import QuestionShortAnswer from "./QuestionShortAnswer";
 import QuestionLongAnswer from "./QuestionLongAnswer";
 import QuestionMultipleChoice from "@/components/form/QuestionMultipleChoice";
@@ -6,8 +6,6 @@ import QuestionDropdown from "@/components/form/QuestionDropdown";
 import QuestionStarRating from "./QuestionStarRating";
 import QuestionScore from "./QuestionScore";
 
-import { Textarea } from "@/components/ui/textarea"; // shadcn/ui
-import Input from "./Input";
 import {
   Select,
   SelectContent,
@@ -16,9 +14,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import Input from "./Input";
+import { v4 as uuidv4 } from "uuid";
+
+interface OptionItem {
+  id: string;
+  label: string;
+  value?: string;
+}
 
 interface QuestionProps {
-  question: any; // 실제 타입은 추후 정의
+  question: any; // TODO: define proper type
   onQuestionChange: (newQuestion: any) => void;
   onDuplicate: () => void;
   onDelete: () => void;
@@ -30,10 +36,17 @@ const Question: FC<QuestionProps> = ({
   onDuplicate,
   onDelete,
 }) => {
+  const isLocked = question.hasAnswer;
+
   const [questionType, setQuestionType] = useState(question.type);
-  const [starUnit, setStarUnit] = useState(question.unit || 1);
   const [questionText, setQuestionText] = useState(question.text || "");
-  const [scoreMin, setScoreMin] = useState(question.min ?? 1);
+  const [options, setOptions] = useState<OptionItem[]>(question.options || []);
+  const [hasEtc, setHasEtc] = useState(question.hasEtc || false);
+  const [allowMultiple, setAllowMultiple] = useState(
+    question.allowMultiple || false
+  );
+  const [starUnit, setStarUnit] = useState(question.unit || 1);
+  const [scoreMin, setScoreMin] = useState(question.min ?? 0);
   const [scoreMax, setScoreMax] = useState(question.max ?? 5);
   const [scoreLeftLabel, setScoreLeftLabel] = useState(
     question.leftLabel ?? ""
@@ -42,89 +55,64 @@ const Question: FC<QuestionProps> = ({
     question.rightLabel ?? ""
   );
 
-  const handleTypeChange = (type: string) => {
-    setQuestionType(type);
-    onQuestionChange({ ...question, type });
-  };
-
-  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newText = e.target.value;
-    setQuestionText(newText);
-    onQuestionChange({ ...question, text: newText });
-  };
-  const [options, setOptions] = useState(question.options || [""]);
-  const [allowMultiple, setAllowMultiple] = useState(
-    question.allowMultiple || false
-  );
-  const [hasEtc, setHasEtc] = useState(question.hasEtc || false);
-
-  // S : 질문 함수 영역
-  const handleChangeStarUnit = (unit: 0.5 | 1) => {
-    setStarUnit(unit);
+  useEffect(() => {
     onQuestionChange({
       ...question,
-      unit,
+      type: questionType,
+      text: questionText,
+      options,
+      hasEtc,
+      allowMultiple,
+      unit: starUnit,
+      min: scoreMin,
+      max: scoreMax,
+      leftLabel: scoreLeftLabel,
+      rightLabel: scoreRightLabel,
     });
+  }, [
+    questionType,
+    questionText,
+    options,
+    hasEtc,
+    allowMultiple,
+    starUnit,
+    scoreMin,
+    scoreMax,
+    scoreLeftLabel,
+    scoreRightLabel,
+  ]);
+
+  const handleAddOption = () => {
+    const newOption = { id: uuidv4(), label: `선택지 ${options.length + 1}` };
+    setOptions([...options, newOption]);
   };
 
   const handleOptionChange = (value: string, idx: number) => {
     const newOptions = [...options];
-    newOptions[idx] = value;
+    newOptions[idx] = { ...newOptions[idx], label: value };
     setOptions(newOptions);
-    onQuestionChange({
-      ...question,
-      options: newOptions,
-    });
   };
 
-  // 항목 삭제
   const handleDeleteOption = (idx: number) => {
-    const newOptions = options.filter((_, i) => i !== idx);
-    setOptions(newOptions);
-    onQuestionChange({
-      ...question,
-      options: newOptions,
-    });
-  };
-  const handleAddOption = () => {
-    const newOptions = [...options, ""];
-    setOptions(newOptions);
-    onQuestionChange({
-      ...question,
-      options: newOptions,
-    });
+    setOptions(options.filter((_, i) => i !== idx));
   };
 
-  // '기타' 토글
-  const handleToggleEtc = () => {
-    setHasEtc(!hasEtc);
-    onQuestionChange({
-      ...question,
-      hasEtc: !hasEtc,
-    });
-  };
-
-  // 복수선택 토글
-  const handleToggleMultiple = () => {
-    setAllowMultiple(!allowMultiple);
-    onQuestionChange({
-      ...question,
-      allowMultiple: !allowMultiple,
-    });
-  };
-
-  // E : 질문 함수 영역
   return (
     <div className="mb-4 border rounded-md p-4">
       <div className="flex items-center justify-between mb-2">
         <Input
           label={`질문 ${question.order_number}`}
           value={questionText}
-          onChange={handleTextChange}
+          onChange={(e) => setQuestionText(e.target.value)}
           placeholder="질문을 입력하세요"
           className="flex-grow mr-2"
+          disabled={isLocked}
         />
-        <Select value={questionType} onValueChange={handleTypeChange}>
+        <Select
+          value={questionType}
+          onValueChange={(val) => setQuestionType(val)}
+          disabled={isLocked}
+        >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="질문 유형 선택" />
           </SelectTrigger>
@@ -138,10 +126,9 @@ const Question: FC<QuestionProps> = ({
           </SelectContent>
         </Select>
       </div>
-      {/* 각 질문 유형에 따른 추가 UI (예: 객관식 답변 옵션 등) */}
+
       {questionType === "text_short" && <QuestionShortAnswer />}
       {questionType === "text_long" && <QuestionLongAnswer />}
-
       {questionType === "radio" && (
         <QuestionMultipleChoice
           options={options}
@@ -150,8 +137,9 @@ const Question: FC<QuestionProps> = ({
           onOptionChange={handleOptionChange}
           onDeleteOption={handleDeleteOption}
           onAddOption={handleAddOption}
-          onToggleEtc={handleToggleEtc}
-          onToggleMultiple={handleToggleMultiple}
+          onToggleEtc={() => setHasEtc(!hasEtc)}
+          onToggleMultiple={() => setAllowMultiple(!allowMultiple)}
+          disabled={isLocked}
         />
       )}
       {questionType === "dropdown" && (
@@ -161,23 +149,30 @@ const Question: FC<QuestionProps> = ({
           onOptionChange={handleOptionChange}
           onDeleteOption={handleDeleteOption}
           onAddOption={handleAddOption}
-          onToggleEtc={handleToggleEtc}
+          onToggleEtc={() => setHasEtc(!hasEtc)}
+          disabled={isLocked}
         />
       )}
-
       {questionType === "star" && (
         <QuestionStarRating
           unit={starUnit}
-          onChangeUnit={handleChangeStarUnit}
+          onChangeUnit={setStarUnit}
+          disabled={isLocked}
         />
       )}
       {questionType === "score" && (
         <QuestionScore
-          min={question.min ?? 0}
-          max={question.max ?? 5}
-          leftLabel={question.leftLabel ?? ""}
-          rightLabel={question.rightLabel ?? ""}
-          onChange={(partial) => onQuestionChange({ ...question, ...partial })}
+          min={scoreMin}
+          max={scoreMax}
+          leftLabel={scoreLeftLabel}
+          rightLabel={scoreRightLabel}
+          onChange={(partial) => {
+            setScoreMin(partial.min);
+            setScoreMax(partial.max);
+            setScoreLeftLabel(partial.leftLabel);
+            setScoreRightLabel(partial.rightLabel);
+          }}
+          disabled={isLocked}
         />
       )}
 
@@ -196,6 +191,7 @@ const Question: FC<QuestionProps> = ({
           variant="destructive"
           size="sm"
           onClick={onDelete}
+          disabled={isLocked}
         >
           삭제
         </Button>
