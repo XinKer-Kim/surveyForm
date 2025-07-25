@@ -14,7 +14,7 @@ const FormBuilderPage = () => {
   const [description, setDescription] = useState("");
   const [startDateTime, setStartDateTime] = useState<Date | undefined>();
   const [endDateTime, setEndDateTime] = useState<Date | undefined>();
-
+  const [isTemplateMode, setIsTemplateMode] = useState(false); // 템플릿 모드 여부
   type Option = {
     id: string;
     label: string;
@@ -64,10 +64,11 @@ const FormBuilderPage = () => {
 
       loadForm();
     } else if (templateId && templateMap[templateId]) {
-      console.log("Loading template:", templateId);
+      console.log("템플릿 불러오기:", templateId);
       setFormElements(templateMap[templateId]);
       setTitle("");
       setDescription("");
+      setIsTemplateMode(true);
     } else {
       console.log("신규 폼 생성 모드");
       setFormElements([]);
@@ -97,11 +98,11 @@ const FormBuilderPage = () => {
   const handleSaveForm = async () => {
     let resolvedFormId = formId;
 
-    if (formId === "new") {
+    if (formId === "new" || isTemplateMode) {
       const { data: formData, error: formError } = await supabase
         .from("forms")
         .insert({
-          user_id: "1dd927e3-2b9d-4d7a-a23d-578e1934bac3",
+          user_id: "1dd927e3-2b9d-4d7a-a23d-578e1934bac3", // TODO: 현재는 하드코딩, 추후 로그인 기능 추가 시 변경 필요
           title,
           description,
         })
