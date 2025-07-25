@@ -55,6 +55,7 @@ function DateConfigRow({
       ? undefined
       : new Date(formDate.replaceAll(". ", "-").slice(0, -1));
 
+
   // 라디오 그룹 상태 관리
   const [selectedValue, setSelectedValue] = useState<string | undefined>(
     dateType
@@ -87,6 +88,7 @@ function DateConfigRow({
       const hour = Math.floor(i / 2);
       const minute = (i % 2) * 30;
       const period = hour < 12 ? "오전" : "오후";
+
       let displayHour = hour % 12;
 
       if (displayHour === 0) displayHour = 12;
@@ -95,6 +97,7 @@ function DateConfigRow({
         2,
         "0"
       )}:${String(minute).padStart(2, "0")}`;
+
       timeList.push(timeStr);
     }
     return timeList;
@@ -217,12 +220,14 @@ function DateConfigRow({
                       className={cn(
                         "cursor-pointer",
                         selectedTime === time ? "text-naver" : "text-black"
+
                       )}
                     >
                       <CheckIcon
                         className={cn(
                           "mr-2 h-4 w-4 text-naver",
                           selectedTime === time ? "opacity-100" : "opacity-0"
+
                         )}
                       />
                       {time}

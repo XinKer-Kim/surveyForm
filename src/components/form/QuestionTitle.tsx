@@ -110,6 +110,7 @@ function QuestionTitle({
                         { value: "custom", label: "직접 설정" },
                       ],
                       defaultValue: "start",
+
                       onValueChange: (value) => setStartType(value),
                     }}
                     dateType={startType}
