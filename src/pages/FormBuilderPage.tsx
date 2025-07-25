@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import { templateMap } from "@/constants/templates";
 import Question from "@/components/form/Question";
 import { supabase } from "@/supabaseClient";
 import QuestionTitle from "@/components/form/QuestionTitle";
 import { v4 as uuidv4 } from "uuid";
 
 const FormBuilderPage = () => {
-  const { formId } = useParams();
+  const { formId, templateId } = useParams();
   const navigate = useNavigate();
   const [formElements, setFormElements] = useState<any[]>([]);
   const [title, setTitle] = useState("");
@@ -62,6 +63,11 @@ const FormBuilderPage = () => {
       };
 
       loadForm();
+    } else if (templateId && templateMap[templateId]) {
+      console.log("Loading template:", templateId);
+      setFormElements(templateMap[templateId]);
+      setTitle("");
+      setDescription("");
     } else {
       console.log("신규 폼 생성 모드");
       setFormElements([]);

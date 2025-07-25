@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import FormBuilderPage from "./pages/FormBuilderPage";
 import ResponsePage from "./pages/ResponsePage";
@@ -21,6 +20,11 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             {/* 첫 화면 = HomePage */}
+            <Route
+              path="/create/template/:templateId"
+              element={<FormBuilderPage />}
+            />
+            {/* 템플릿 선택 후 폼 생성 페이지 */}
             <Route path="/builder/new" element={<FormBuilderPage />} />
             {/* 새 설문 생성 경로 */}
             <Route path="/builder/:formId" element={<FormBuilderPage />} />
