@@ -11,6 +11,8 @@ const FormBuilderPage = () => {
   const [formElements, setFormElements] = useState<any[]>([]); // 폼 요소 상태 관리
   const [title, setTitle] = useState(""); // 폼 제목
   const [description, setDescription] = useState("");
+  const [startDateTime, setStartDateTime] = useState<Date | undefined>();
+  const [endDateTime, setEndDateTime] = useState<Date | undefined>();
 
   useEffect(() => {
     if (formId && formId !== "new") {
@@ -28,8 +30,11 @@ const FormBuilderPage = () => {
           .select("*")
           .eq("form_id", formId)
           .order("order_number", { ascending: true });
+
         setTitle(form.title);
         setDescription(form.description);
+        setStartDateTime(form.start_time);
+        setEndDateTime(form.end_time);
         setFormElements(questions || []);
       };
 
@@ -119,6 +124,10 @@ const FormBuilderPage = () => {
       </h1>
       <div className="mb-4">
         <QuestionTitle
+          title={title}
+          description={description}
+          startDateTime={startDateTime}
+          endDateTime={endDateTime}
           handleAddInput={handleAddInput}
           handleAddPage={handleAddPage}
         />
