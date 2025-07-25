@@ -119,13 +119,14 @@ const FormBuilderPage = () => {
             type: q.type,
             order_number: i + 1,
             required: q.required ?? false,
-            options:
-              q.options?.map((opt, j) => ({
-                id: opt.id,
-                label: opt.label.trim() === "" ? null : opt.label,
-                value: opt.value ?? null,
-                order_number: j + 1,
-              })) ?? [],
+            options: ["radio", "dropdown", "checkbox"].includes(q.type)
+              ? q.options?.map((opt, j) => ({
+                  id: opt.id,
+                  label: opt.label,
+                  value: opt.value ?? null,
+                  order_number: j + 1,
+                })) ?? []
+              : [], // 주관식 등에는 options 보내지 않음
           })),
         },
       }
