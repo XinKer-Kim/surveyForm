@@ -1,19 +1,20 @@
-import { useMemo, useRef, useState } from 'react';
-import { Label } from '../ui/label';
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
-import { Input } from '../ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { Button } from '../ui/button';
-import { CalendarIcon, CheckIcon, ClockIcon } from 'lucide-react';
-import { Calendar } from '../ui/calendar';
+import { useMemo, useRef, useState } from "react";
+import { Label } from "../ui/label";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { Input } from "../ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Button } from "../ui/button";
+import { CalendarIcon, CheckIcon, ClockIcon } from "lucide-react";
+import { Calendar } from "../ui/calendar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { ScrollArea } from '../ui/scroll-area';
-import { cn } from '@/lib/utils';
+} from "../ui/dropdown-menu";
+import { ScrollArea } from "../ui/scroll-area";
+import { cn } from "@/lib/utils";
+import { formatDate } from "@/utils/dateUtils";
 
 interface RadioGroupProps {
   label: string;
@@ -35,16 +36,6 @@ interface DateConfigRowProps {
   onSetTimeChange: (value: string) => void;
 }
 
-function formatDate(date: Date | undefined) {
-  if (!date) return '';
-
-  return date.toLocaleDateString('kr-KO', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-  });
-}
-
 function isValidDate(date: Date | undefined) {
   if (!date) return false;
 
@@ -60,9 +51,10 @@ function DateConfigRow({
   formTime,
 }: DateConfigRowProps) {
   const parsedDate: Date | undefined =
-    formDate === '' || dateType !== 'custom'
+    formDate === "" || dateType !== "custom"
       ? undefined
-      : new Date(formDate.replaceAll('. ', '-').slice(0, -1));
+      : new Date(formDate.replaceAll(". ", "-").slice(0, -1));
+
 
   // 라디오 그룹 상태 관리
   const [selectedValue, setSelectedValue] = useState<string | undefined>(
@@ -95,15 +87,17 @@ function DateConfigRow({
     for (let i = 0; i < 48; i++) {
       const hour = Math.floor(i / 2);
       const minute = (i % 2) * 30;
-      const period = hour < 12 ? '오전' : '오후';
+      const period = hour < 12 ? "오전" : "오후";
+
       let displayHour = hour % 12;
 
       if (displayHour === 0) displayHour = 12;
 
       const timeStr = `${period} ${String(displayHour).padStart(
         2,
-        '0'
-      )}:${String(minute).padStart(2, '0')}`;
+        "0"
+      )}:${String(minute).padStart(2, "0")}`;
+
       timeList.push(timeStr);
     }
     return timeList;
@@ -133,7 +127,7 @@ function DateConfigRow({
         </div>
 
         {/* '직접 설정' 체크 시 컴포넌트 활성화. */}
-        {selectedValue === 'custom' && (
+        {selectedValue === "custom" && (
           <div className="flex flex-col gap-2">
             {/* 캘린더 */}
             <div className="relative flex gap-2">
@@ -153,7 +147,7 @@ function DateConfigRow({
                 }}
                 onClick={() => dateInput.current?.click()}
                 onKeyDown={(e) => {
-                  if (e.key === 'ArrowDown') {
+                  if (e.key === "ArrowDown") {
                     e.preventDefault();
                     setOpenCalendar(true);
                   }
@@ -224,14 +218,16 @@ function DateConfigRow({
                         onSetTimeChange(time);
                       }}
                       className={cn(
-                        'cursor-pointer',
-                        selectedTime === time ? 'text-naver' : 'text-black'
+                        "cursor-pointer",
+                        selectedTime === time ? "text-naver" : "text-black"
+
                       )}
                     >
                       <CheckIcon
                         className={cn(
-                          'mr-2 h-4 w-4 text-naver',
-                          selectedTime === time ? 'opacity-100' : 'opacity-0'
+                          "mr-2 h-4 w-4 text-naver",
+                          selectedTime === time ? "opacity-100" : "opacity-0"
+
                         )}
                       />
                       {time}
