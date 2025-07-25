@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Button } from '../ui/button';
+import { useEffect, useMemo, useState } from "react";
+import { Button } from "../ui/button";
 import {
   Dialog,
   DialogClose,
@@ -8,37 +8,61 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '../ui/dialog';
-import { Input } from '../ui/input';
-import DateConfigRow from './DateConfigRow';
-import { DialogDescription } from '@radix-ui/react-dialog';
-import { Label } from '../ui/label';
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group';
+  DialogDescription,
+} from "../ui/dialog";
+import { Input } from "../ui/input";
+import DateConfigRow from "./DateConfigRow";
+import { formatDate, formatTime } from "@/utils/dateUtils";
 
 interface QuestionTitleProps {
+  title: string;
+  description: string;
+  startDateTime: Date | undefined;
+  endDateTime: Date | undefined;
   handleAddInput: () => void;
   handleAddPage: () => void;
 }
 
-function QuestionTitle({ handleAddInput, handleAddPage }: QuestionTitleProps) {
+function QuestionTitle({
+  title,
+  description,
+  startDateTime,
+  endDateTime,
+  handleAddInput,
+  handleAddPage,
+}: QuestionTitleProps) {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-  const [startType, setStartType] = useState<string>('');
-  const [startDate, setStartDate] = useState<string>('');
-  const [startTime, setStartTime] = useState<string>('');
-  const [endType, setEndType] = useState<string>('');
-  const [endDate, setEndDate] = useState<string>('');
-  const [endTime, setEndTime] = useState<string>('');
-  const [dateConfig, setDateConfig] = useState<string>('');
+  const [startType, setStartType] = useState<string>(
+    startDateTime ? "custom" : ""
+  );
+  const [startDate, setStartDate] = useState<string>(formatDate(startDateTime));
+  const [startTime, setStartTime] = useState<string>(formatTime(startDateTime));
+  const [endType, setEndType] = useState<string>(endDateTime ? "custom" : "");
+  const [endDate, setEndDate] = useState<string>(formatDate(endDateTime));
+  const [endTime, setEndTime] = useState<string>("");
+
+  useEffect(() => {
+    setStartType(startDateTime ? "custom" : "start");
+    setStartDate(formatDate(startDateTime));
+    setStartTime(formatTime(startDateTime));
+  }, [startDateTime]);
+
+  useEffect(() => {
+    setEndType(endDateTime ? "custom" : "unlimited");
+    setEndDate(formatDate(endDateTime));
+    setEndTime(formatTime(endDateTime));
+  }, [endDateTime]);
+
+  const dateConfig = useMemo(() => {
+    const startPart =
+      startType !== "custom" ? "즉시 시작" : `${startDate} ${startTime}`;
+    const endPart =
+      endType !== "custom" ? "제한 없음" : `${endDate} ${endTime}`;
+
+    return `${startPart} ~ ${endPart}`;
+  }, [startType, startDate, startTime, endType, endDate, endTime]);
 
   const handleDialogConfirm = () => {
-    setDateConfig(
-      `${
-        startDate === '' || startType !== 'custom' ? '바로 시작' : startDate
-      } ${startTime} ~ ${
-        endDate === '' || endType !== 'custom' ? '제한 없음' : endDate
-      } ${endTime}`
-    );
-
     if (isDialogOpen) setIsDialogOpen(false);
   };
 
@@ -51,11 +75,13 @@ function QuestionTitle({ handleAddInput, handleAddPage }: QuestionTitleProps) {
             type="text"
             className="p-0 border-x-0 border-t-0 border-b-2 border-transparent shadow-none rounded-none !text-lg font-bold placeholder:text-neutral-300 focus-visible:ring-0 focus-visible:ring-offset-0 hover:border-neutral-300"
             placeholder="설문 제목 입력"
+            defaultValue={title}
           />
           <Input
             type="text"
             className="p-0 border-x-0 border-t-0 border-b-2 border-transparent shadow-none rounded-none !text-sm font-base placeholder:text-neutral-300 focus-visible:ring-0 focus-visible:ring-offset-0 hover:border-neutral-300"
             placeholder="설명 입력"
+            defaultValue={description}
           />
           <div className="flex flex-row items-center justify-start gap-2 ">
             <p className="w-20 text-xs">설문 기간</p>
@@ -78,12 +104,13 @@ function QuestionTitle({ handleAddInput, handleAddPage }: QuestionTitleProps) {
                 <div className="flex flex-col items-start gap-8">
                   <DateConfigRow
                     radioGroup={{
-                      label: '시작',
+                      label: "시작",
                       options: [
-                        { value: 'start', label: '즉시 시작' },
-                        { value: 'custom', label: '직접 설정' },
+                        { value: "start", label: "즉시 시작" },
+                        { value: "custom", label: "직접 설정" },
                       ],
-                      defaultValue: 'start',
+                      defaultValue: "start",
+
                       onValueChange: (value) => setStartType(value),
                     }}
                     dateType={startType}
@@ -94,12 +121,12 @@ function QuestionTitle({ handleAddInput, handleAddPage }: QuestionTitleProps) {
                   />
                   <DateConfigRow
                     radioGroup={{
-                      label: '종료',
+                      label: "종료",
                       options: [
-                        { value: 'noLimit', label: '제한 없음' },
-                        { value: 'custom', label: '직접 설정' },
+                        { value: "unlimited", label: "제한 없음" },
+                        { value: "custom", label: "직접 설정" },
                       ],
-                      defaultValue: 'noLimit',
+                      defaultValue: "unlimited",
                       onValueChange: (value) => setEndType(value),
                     }}
                     dateType={endType}

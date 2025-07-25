@@ -11,6 +11,8 @@ const FormBuilderPage = () => {
   const [formElements, setFormElements] = useState<any[]>([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [startDateTime, setStartDateTime] = useState<Date | undefined>();
+  const [endDateTime, setEndDateTime] = useState<Date | undefined>();
 
   type Option = {
     id: string;
@@ -48,12 +50,15 @@ const FormBuilderPage = () => {
           )
           .eq("form_id", formId)
           .order("order_number", { ascending: true });
-
-        const questionsWithFlags = (rawQuestions ?? []).map((q) => ({
-          ...q,
-          hasAnswer: (q.answers ?? []).length > 0,
-        }));
-        setFormElements(questionsWithFlags);
+          const questionsWithFlags = (rawQuestions ?? []).map((q) => ({
+              ...q,
+              hasAnswer: (q.answers ?? []).length > 0,
+          }));
+          setTitle(form.title);
+          setDescription(form.description);
+          setStartDateTime(form.start_time);
+          setEndDateTime(form.end_time);
+        setFormElements(questions || []);
       };
 
       loadForm();
@@ -156,6 +161,10 @@ const FormBuilderPage = () => {
       </h1>
       <div className="mb-4">
         <QuestionTitle
+          title={title}
+          description={description}
+          startDateTime={startDateTime}
+          endDateTime={endDateTime}
           handleAddInput={handleAddInput}
           handleAddPage={() => {}}
         />
