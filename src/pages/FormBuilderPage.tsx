@@ -50,15 +50,15 @@ const FormBuilderPage = () => {
           )
           .eq("form_id", formId)
           .order("order_number", { ascending: true });
-          const questionsWithFlags = (rawQuestions ?? []).map((q) => ({
-              ...q,
-              hasAnswer: (q.answers ?? []).length > 0,
-          }));
-          setTitle(form.title);
-          setDescription(form.description);
-          setStartDateTime(form.start_time);
-          setEndDateTime(form.end_time);
-        setFormElements(questions || []);
+        const questionsWithFlags = (rawQuestions ?? []).map((q) => ({
+          ...q,
+          hasAnswer: (q.answers ?? []).length > 0,
+        }));
+        setTitle(form.title);
+        setDescription(form.description);
+        setStartDateTime(form.start_time);
+        setEndDateTime(form.end_time);
+        setFormElements(questionsWithFlags);
       };
 
       loadForm();
@@ -124,13 +124,14 @@ const FormBuilderPage = () => {
             type: q.type,
             order_number: i + 1,
             required: q.required ?? false,
-            options:
-              q.options?.map((opt, j) => ({
-                id: opt.id,
-                label: opt.label.trim() === "" ? null : opt.label,
-                value: opt.value ?? null,
-                order_number: j + 1,
-              })) ?? [],
+            options: ["radio", "dropdown", "checkbox"].includes(q.type)
+              ? q.options?.map((opt, j) => ({
+                  id: opt.id,
+                  label: opt.label,
+                  value: opt.value ?? null,
+                  order_number: j + 1,
+                })) ?? []
+              : [], // 주관식 등에는 options 보내지 않음
           })),
         },
       }
