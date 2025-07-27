@@ -12,6 +12,7 @@ const links = [
 function NavBar() {
   const location = useLocation();
   const pathname = location.pathname;
+  const user = useAuthStore((state) => state.user);
 
   return (
     <>
