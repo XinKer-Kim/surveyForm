@@ -37,7 +37,7 @@ function NavBar() {
               <img
                 src="src/assets/icons/logo.png"
                 alt="@Logo"
-                className="w-[40px] h-[40px]"
+                className="w-[40px] h-[40px] sm:w-10 sm:h-10 object-contain"
               />
             </Link>
             {links.map((link) => (
@@ -67,7 +67,10 @@ function NavBar() {
               <Link to="/sign-in">로그인</Link>
             )}
             {pathname === "/list" ? (
-              <Button className="flex items-center justify-center font-semibold rounded-4xl bg-naver">
+              <Button
+                onClick={() => navigate("/builder/new")}
+                className="flex items-center justify-center font-semibold rounded-4xl bg-naver cursor-pointer"
+              >
                 <Plus className="!w-[16px] !h-[16px]" strokeWidth={3} />
                 설문 만들기
               </Button>
