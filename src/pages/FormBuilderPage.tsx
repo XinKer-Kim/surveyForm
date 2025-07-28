@@ -34,6 +34,13 @@ const FormBuilderPage = () => {
     order_number?: number;
   };
 
+  type Option = {
+    id: string;
+    label: string;
+    value?: string;
+    order_number?: number;
+  };
+
   useEffect(() => {
     if (formId && formId !== "new") {
       console.log("폼 수정 모드");
@@ -67,6 +74,7 @@ const FormBuilderPage = () => {
           ...q,
           hasAnswer: (q.answers ?? []).length > 0,
         }));
+
         setTitle(form.title);
         setDescription(form.description);
         setStartDateTime(form.start_time);

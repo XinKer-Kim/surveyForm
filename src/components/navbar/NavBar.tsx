@@ -1,17 +1,24 @@
+import { Plus } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Link, useLocation } from 'react-router-dom';
+import NavLink from './NavLink';
+import { NAVBAR_HEIGHT_CLASS } from '@/constants/layout';
 import { Plus } from "lucide-react";
 import { Button } from "../ui/button";
 import { Link, useLocation } from "react-router-dom";
 import NavLink from "./NavLink";
 import { NAVBAR_HEIGHT_CLASS } from "@/constants/layout";
+import { useAuthStore } from "../store/\bauthStore";
 
 const links = [
-  { to: "/list", label: "내 설문" },
-  { to: "/bookmarks", label: "참여한 설문" },
+  { to: '/list', label: '내 설문' },
+  { to: '/bookmarks', label: '참여한 설문' },
 ];
 
 function NavBar() {
   const location = useLocation();
   const pathname = location.pathname;
+  const user = useAuthStore((state) => state.user);
 
   return (
     <>
@@ -33,7 +40,21 @@ function NavBar() {
           </div>
           {/* '설문 만들기' 버튼 , 로그인 버튼 */}
           <div className="flex items-center gap-4">
-            <Link to={"sign-in"}>로그인</Link>
+            <Link to={'sign-in'}>로그인</Link>
+            {pathname === '/list' ? (
+            {user ? (
+              <span className="text-sm font-semibold">
+                {user.username} (
+                {user.gender === "male"
+                  ? "남성"
+                  : user.gender === "female"
+                  ? "여성"
+                  : "기타"}
+                )
+              </span>
+            ) : (
+              <Link to="/sign-in">로그인</Link>
+            )}
             {pathname === "/list" ? (
               <Button className="flex items-center justify-center font-semibold rounded-4xl bg-naver">
                 <Plus className="!w-[16px] !h-[16px]" strokeWidth={3} />

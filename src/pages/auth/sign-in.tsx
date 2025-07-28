@@ -1,3 +1,5 @@
+import { useAuthStore } from "@/components/store/\bauthStore";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -37,6 +39,8 @@ const formSchema = z.object({
 
 function SignIn() {
   const navigate = useNavigate();
+  const setUser = useAuthStore((state) => state.setUser);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -51,18 +55,50 @@ function SignIn() {
       email,
       password,
     });
+
     if (error) {
       Swal.fire({
         icon: "error",
         title: "로그인 실패",
         text: error.message,
       });
-    } else if (!error && data.user && data.session) {
+    } else if (data.user && data.session) {
+      const userId = data.user.id;
+
+      // 🔍 userinfo 테이블에서 추가 정보 가져오기
+      const { data: userInfo, error: userInfoError } = await supabase
+        .from("userinfo")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (userInfoError) {
+        Swal.fire({
+          icon: "error",
+          title: "사용자 정보 조회 실패",
+          text: userInfoError.message,
+        });
+        return;
+      }
+
+      // 상태 저장
+      const fullUserData = {
+        id: userId,
+        email: data.user.email!,
+        username: userInfo.username,
+        gender: userInfo.gender,
+        birthdate: userInfo.birthdate,
+      };
+
+      setUser(fullUserData);
+      sessionStorage.setItem("supabase_session", JSON.stringify(fullUserData));
+
       Swal.fire({
         icon: "success",
         title: "로그인 성공!",
+      }).then(() => {
+        navigate("/");
       });
-      navigate("/"); // 메인 페이지로 리다이렉션
     }
   };
 

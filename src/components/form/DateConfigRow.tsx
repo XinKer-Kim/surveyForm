@@ -93,7 +93,6 @@ function DateConfigRow({
       const hour = Math.floor(i / 2);
       const minute = (i % 2) * 30;
       const period = hour < 12 ? "오전" : "오후";
-
       let displayHour = hour % 12;
 
       if (displayHour === 0) displayHour = 12;
