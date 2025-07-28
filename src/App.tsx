@@ -35,8 +35,6 @@ function App() {
               path="/create/template/:templateId"
               element={<FormBuilderPage />}
             />
-            {/* 템플릿 선택 후 폼 생성 페이지 */}
-            <Route path="/builder/new" element={<FormBuilderPage />} />
             {/* 새 설문 생성 경로 */}
             <Route path="/builder/:formId" element={<FormBuilderPage />} />
             {/* 설문 수정 경로 */}
@@ -46,9 +44,6 @@ function App() {
             {/* 내 설문(목록 페이지)*/}
             <Route path="/results/:formId" element={<ResultPage />} />
             {/* 결과확인 - 설문결과 */}
-
-            <Route path="/preview/:formId" element={<FormPreviewPage />} />
-            {/* 미리보기 페이지 */}
 
             <Route path="/take/:formId" element={<TakeSurveyPage />} />
             {/* 참여한 설문(목록 페이지)*/}
