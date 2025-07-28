@@ -54,15 +54,28 @@ const FormBuilderPage = () => {
           .from("questions")
           .select(
             `
-              id, text, type, order_number, required, is_required,
-              options (
-                id, label, value, order_number
-              ),
-              answers(id)
-            `
+    id,
+    text,
+    type,
+    order_number,
+    required,
+    unit,
+    min,
+    max,
+    left_label,
+    right_label,
+    options (
+      id,
+      label,
+      value,
+      order_number
+    ),
+    answers(id)
+  `
           )
           .eq("form_id", formId)
           .order("order_number", { ascending: true });
+
         const questionsWithFlags = (rawQuestions ?? []).map((q) => ({
           ...q,
           hasAnswer: (q.answers ?? []).length > 0,
@@ -166,6 +179,7 @@ const FormBuilderPage = () => {
             type: q.type,
             order_number: i + 1,
             required: q.required ?? false,
+            unit: q.unit ?? null, // ✅ 별점 단위 추가
             options: ["radio", "dropdown", "checkbox"].includes(q.type)
               ? q.options?.map((opt, j) => ({
                   id: opt.id,
