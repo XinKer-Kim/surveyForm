@@ -34,13 +34,6 @@ const FormBuilderPage = () => {
     order_number?: number;
   };
 
-  type Option = {
-    id: string;
-    label: string;
-    value?: string;
-    order_number?: number;
-  };
-
   useEffect(() => {
     if (formId && formId !== "new") {
       console.log("폼 수정 모드");

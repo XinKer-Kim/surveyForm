@@ -10,8 +10,17 @@ import ResultPage from "@/pages/ResultPage"; // 경로에 맞게 조정
 import SignIn from "@/pages/auth/sign-in";
 import SignUp from "@/pages/auth/sign-up";
 import { NAVBAR_PADDING_TOP_CLASS } from "./constants/layout";
+import { useEffect } from "react";
+import { useAuthStore } from "./components/store/\bauthStore";
 
 function App() {
+  const setUser = useAuthStore((state) => state.setUser);
+  useEffect(() => {
+    const storedUser = sessionStorage.getItem("supabase_session");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
   return (
     <BrowserRouter>
       <NavBar />
@@ -38,7 +47,7 @@ function App() {
 
             <Route path="/bookmarks" element={<MyTakenList />} />
             {/* 참여한 설문(목록 페이지)*/}
-            
+
             <Route path="/sign-in" element={<SignIn />} />
             {/* 로그인 */}
             <Route path="/sign-up" element={<SignUp />} />
