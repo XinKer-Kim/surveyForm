@@ -7,10 +7,13 @@ import QuestionTitle from "@/components/form/QuestionTitle";
 import { v4 as uuidv4 } from "uuid";
 import { formatDate, formatTime, parseDateTime } from "@/utils/dateUtils";
 import { SurveyPeriod } from "@/constants/survey";
+import { useAuthStore } from "@/components/store/authStore";
 
 const FormBuilderPage = () => {
   const { formId, templateId } = useParams();
   const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
+  const userId = user?.id ?? null;
 
   // Questiontitle 상태 관리
   const [title, setTitle] = useState("");
@@ -134,6 +137,11 @@ const FormBuilderPage = () => {
   };
 
   const handleSaveForm = async () => {
+    console.log("userId:", userId);
+    if (!userId) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
     let resolvedFormId = formId;
 
     console.log(`${startType} ${endType}`);
@@ -142,16 +150,16 @@ const FormBuilderPage = () => {
       const { data: formData, error: formError } = await supabase
         .from("forms")
         .insert({
-          user_id: "1dd927e3-2b9d-4d7a-a23d-578e1934bac3", // TODO: 현재는 하드코딩, 추후 로그인 기능 추가 시 변경 필요
+          user_id: userId, // TODO: 현재는 하드코딩, 추후 로그인 기능 추가 시 변경 필요
           title,
           description,
         })
         .select()
         .single();
 
-      if (formError || !formData) {
-        console.error("폼 생성 실패:", formError);
-        alert("폼 저장 실패");
+      if (formError) {
+        console.error("폼 생성 에러:", formError);
+        alert(`폼 생성 실패: ${formError.message}`);
         return;
       }
 
