@@ -14,6 +14,7 @@ type AnswerWithQuestion = {
   max?: number;
   leftLabel?: string;
   rightLabel?: string;
+  order_number?: number;
 };
 
 const ResponsePage = () => {
@@ -72,8 +73,11 @@ const ResponsePage = () => {
           max: question.max,
           leftLabel: question.leftLabel,
           rightLabel: question.rightLabel,
+          order_number: question.order_number, // ✅ 정렬을 위해 추가
         };
       });
+      // ✅ order_number로 정렬
+      parsed.sort((a, b) => (a.order_number ?? 0) - (b.order_number ?? 0));
 
       setAnswers(parsed);
     };
