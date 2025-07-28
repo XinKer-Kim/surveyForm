@@ -1,4 +1,4 @@
-import { useAuthStore } from "@/components/store/\bauthStore";
+import { useAuthStore } from "@/components/store/authStore";
 
 import { Button } from "@/components/ui/button";
 import {
