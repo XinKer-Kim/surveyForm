@@ -7,7 +7,13 @@ type AnswerWithQuestion = {
   question_text: string;
   question_type: string;
   text_answer: string | null;
+  option_id: string | null;
   option_label: string | null;
+  unit?: number;
+  min?: number;
+  max?: number;
+  leftLabel?: string;
+  rightLabel?: string;
 };
 
 const ResponsePage = () => {
@@ -22,14 +28,18 @@ const ResponsePage = () => {
         .from("responses")
         .select(
           `
-    submitted_at,
-    forms ( title ),
-    answers (
-      text_answer,
-      question_id,
-      questions ( text, type )
+  submitted_at,
+  forms ( title ),
+  answers (
+    text_answer,
+    option_id,
+    question_id,
+    questions (
+      *,
+      options ( id, label )
     )
-  `
+  )
+`
         )
         .eq("form_id", formId)
         .eq("user_id", "1dd927e3-2b9d-4d7a-a23d-578e1934bac3") // 고정 유저
@@ -45,12 +55,25 @@ const ResponsePage = () => {
       setSubmittedAt(data.submitted_at);
       setFormTitle(data.forms.title);
 
-      const parsed: AnswerWithQuestion[] = data.answers.map((a: any) => ({
-        question_text: a.questions.text,
-        question_type: a.questions.type,
-        text_answer: a.text_answer,
-        option_label: null, // 옵션 없음
-      }));
+      const parsed: AnswerWithQuestion[] = data.answers.map((a: any) => {
+        const question = a.questions;
+        const matchedOption = question.options?.find(
+          (opt: any) => opt.id === a.option_id
+        );
+
+        return {
+          question_text: question.text,
+          question_type: question.type,
+          text_answer: a.text_answer,
+          option_id: a.option_id,
+          option_label: matchedOption?.label ?? null,
+          unit: question.unit,
+          min: question.min,
+          max: question.max,
+          leftLabel: question.leftLabel,
+          rightLabel: question.rightLabel,
+        };
+      });
 
       setAnswers(parsed);
     };
@@ -68,22 +91,37 @@ const ResponsePage = () => {
       )}
 
       <div className="space-y-4">
-        {answers.map((a, i) => (
-          <Card key={i}>
-            <CardHeader>
-              <CardTitle>
-                Q{i + 1}. {a.question_text}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-base">
-                {a.option_label ?? a.text_answer ?? (
-                  <span className="text-gray-400">응답 없음</span>
-                )}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
+        {/* TODO : 오더id순으로 정렬 */}
+        {answers.map((a, i) => {
+          let displayAnswer = "";
+
+          if (["radio", "dropdown"].includes(a.question_type)) {
+            displayAnswer = a.option_label ?? "응답 없음";
+          } else if (a.question_type === "star") {
+            displayAnswer = a.text_answer
+              ? `${a.text_answer}점${a.unit ? ` (단위: ${a.unit})` : ""}`
+              : "응답 없음";
+          } else if (a.question_type === "score") {
+            displayAnswer = a.text_answer
+              ? `${a.text_answer}점 (범위: ${a.min ?? 0} ~ ${a.max ?? 5})`
+              : "응답 없음";
+          } else {
+            displayAnswer = a.text_answer ?? "응답 없음";
+          }
+
+          return (
+            <Card key={i}>
+              <CardHeader>
+                <CardTitle>
+                  Q{i + 1}. {a.question_text}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-base text-gray-800">{displayAnswer}</p>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
