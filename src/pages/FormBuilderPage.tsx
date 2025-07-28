@@ -15,6 +15,24 @@ const FormBuilderPage = () => {
   // Questiontitle 상태 관리
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [startType, setStartType] = useState<string>(SurveyPeriod.START);
+  const [startDateTime, setStartDateTime] = useState<Date | undefined>();
+  const [startDate, setStartDate] = useState<string>(formatDate(startDateTime));
+  const [startTime, setStartTime] = useState<string>(formatTime(startDateTime));
+  const [endType, setEndType] = useState<string>(SurveyPeriod.UNLIMITED);
+  const [endDateTime, setEndDateTime] = useState<Date | undefined>();
+  const [endDate, setEndDate] = useState<string>(formatDate(endDateTime));
+  const [endTime, setEndTime] = useState<string>(formatTime(endDateTime));
+
+  const [isTemplateMode, setIsTemplateMode] = useState(false); // 템플릿 모드 여부
+  const [formElements, setFormElements] = useState<any[]>([]);
+
+  type Option = {
+    id: string;
+    label: string;
+    value?: string;
+    order_number?: number;
+  };
 
   type Option = {
     id: string;
@@ -52,11 +70,21 @@ const FormBuilderPage = () => {
           )
           .eq("form_id", formId)
           .order("order_number", { ascending: true });
-
         const questionsWithFlags = (rawQuestions ?? []).map((q) => ({
           ...q,
           hasAnswer: (q.answers ?? []).length > 0,
         }));
+
+        setTitle(form.title);
+        setDescription(form.description);
+        setStartDateTime(form.start_time);
+        setStartType(
+          form.start_time ? SurveyPeriod.CUSTOM : SurveyPeriod.START
+        );
+        setEndDateTime(form.end_time);
+        setEndType(
+          form.end_time ? SurveyPeriod.CUSTOM : SurveyPeriod.UNLIMITED
+        );
         setFormElements(questionsWithFlags);
       };
 

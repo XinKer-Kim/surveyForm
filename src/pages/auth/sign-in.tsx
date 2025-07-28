@@ -40,6 +40,7 @@ const formSchema = z.object({
 function SignIn() {
   const navigate = useNavigate();
   const setUser = useAuthStore((state) => state.setUser);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

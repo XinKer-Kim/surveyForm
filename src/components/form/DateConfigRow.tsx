@@ -56,6 +56,9 @@ function DateConfigRow({
       ? undefined
       : new Date(formDate.replaceAll(". ", "-").slice(0, -1));
 
+  const parsedTime: string | undefined =
+    formDate === "" || dateType !== SurveyPeriod.CUSTOM ? undefined : formTime;
+
   // 라디오 그룹 상태 관리
   const [selectedValue, setSelectedValue] = useState<string | undefined>(
     dateType
@@ -98,6 +101,7 @@ function DateConfigRow({
         2,
         "0"
       )}:${String(minute).padStart(2, "0")}`;
+
       timeList.push(timeStr);
     }
     return timeList;
