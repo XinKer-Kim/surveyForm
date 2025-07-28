@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/supabaseClient";
 import { Button } from "@/components/ui/button";
+import StarRating from "@/components/form/starRating"; // StarRating 컴포넌트 임포트
 
 const TakeSurveyPage = () => {
   const { formId } = useParams();
@@ -21,9 +22,25 @@ const TakeSurveyPage = () => {
         .eq("id", formId)
         .single();
 
-      const { data: qs, error: qError } = await supabase
+      const { data: qs } = await supabase
         .from("questions")
-        .select("id, text, type, required, options(id, label)")
+        .select(
+          `
+    id,
+    text,
+    type,
+    required,
+    unit,
+    min,
+    max,
+    left_label,
+    right_label,
+    options (
+      id,
+      label
+    )
+  `
+        )
         .eq("form_id", formId)
         .order("order_number", { ascending: true });
 
@@ -134,24 +151,24 @@ const TakeSurveyPage = () => {
               ))}
             </select>
           )}
-          {/* 별점 */}
           {q.type === "star" && (
             <div className="flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <span
-                  key={n}
-                  className={`cursor-pointer text-2xl ${
-                    (answers[q.id] || 0) >= n
-                      ? "text-yellow-400"
-                      : "text-gray-300"
-                  }`}
-                  onClick={() => handleAnswerChange(q.id, n)}
-                >
-                  ★
-                </span>
-              ))}
+              <StarRating
+                score={answers[q.id] ?? 0}
+                unit={q.unit ?? 1} // unit prop 전달
+                onChange={(value) => handleAnswerChange(q.id, value)}
+                maxStars={q.max ?? 5} // maxStars prop 전달 (별의 최대 개수)
+              />
+              <span className="ml-2 text-sm text-gray-500">
+                {answers[q.id] ?? "0"}점
+              </span>
+              <span className="ml-2 text-sm text-gray-500">
+                ({(q.unit ?? 1) === 0.5 ? "0.5~5점" : "1~5점"}까지 선택
+                가능합니다.)
+              </span>
             </div>
           )}
+
           {/* 점수형 */}
           {q.type === "score" && (
             <div className="flex flex-col gap-2">
