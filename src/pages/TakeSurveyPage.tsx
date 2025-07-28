@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/supabaseClient";
 import { Button } from "@/components/ui/button";
-import StarRating from "@/components/form/starRating"; // StarRating 컴포넌트 임포트
+import StarRating from "@/components/ui/starRating.tsx"; // StarRating 컴포넌트 임포트
 
 const TakeSurveyPage = () => {
   const { formId } = useParams();

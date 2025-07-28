@@ -7,7 +7,7 @@ interface StarRatingProps {
   maxStars?: number; // 최대 별점 개수 (기본값 5)
 }
 
-const StarRating: React.FC<StarRatingProps> = ({
+const starRating: React.FC<StarRatingProps> = ({
   score,
   unit,
   onChange,
@@ -80,4 +80,4 @@ const StarRating: React.FC<StarRatingProps> = ({
   );
 };
 
-export default StarRating;
+export default starRating;
