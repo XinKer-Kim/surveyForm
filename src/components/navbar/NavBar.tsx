@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import { Link, useLocation } from "react-router-dom";
 import NavLink from "./NavLink";
 import { NAVBAR_HEIGHT_CLASS } from "@/constants/layout";
+import { useAuthStore } from "../store/\bauthStore";
 
 const links = [
   { to: "/list", label: "내 설문" },
@@ -34,7 +35,11 @@ function NavBar() {
           </div>
           {/* '설문 만들기' 버튼 , 로그인 버튼 */}
           <div className="flex items-center gap-4">
-            <Link to={"sign-in"}>로그인</Link>
+            {user ? (
+              <span className="text-lg font-semibold">{user.username}</span>
+            ) : (
+              <Link to="/sign-in">로그인</Link>
+            )}
             {pathname === "/list" ? (
               <Button className="flex items-center justify-center font-semibold rounded-4xl bg-naver">
                 <Plus className="!w-[16px] !h-[16px]" strokeWidth={3} />

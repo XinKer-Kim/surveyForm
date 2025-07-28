@@ -8,8 +8,17 @@ import MyFormList from "@/pages/MyFormList"; // 경로에 맞게 조정
 import SignIn from "@/pages/auth/sign-in";
 import SignUp from "@/pages/auth/sign-up";
 import { NAVBAR_PADDING_TOP_CLASS } from "./constants/layout";
+import { useAuthStore } from "./components/store/\bauthStore";
+import { useEffect } from "react";
 
 function App() {
+  const setUser = useAuthStore((state) => state.setUser);
+  useEffect(() => {
+    const storedUser = sessionStorage.getItem("supabase_session");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
   return (
     <BrowserRouter>
       <NavBar />
