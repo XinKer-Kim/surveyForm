@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/supabaseClient";
 import { Button } from "@/components/ui/button";
-import  ShareLink from "@/components/ui/ShareLink";
-import  FormActionMenu from "@/components/ui/FormActionMenu";
+import ShareLink from "@/components/ui/ShareLink";
+import FormActionMenu from "@/components/ui/FormActionMenu";
 import { useNavigate } from "react-router-dom";
 
 interface FormType {
@@ -16,10 +16,25 @@ interface FormType {
 }
 
 const MyFormList = () => {
-  const [userId] = useState<string>("1dd927e3-2b9d-4d7a-a23d-578e1934bac3"); // ✅ 하드코딩된 테스트용 UUID
+  const [userId, setUserId] = useState<string | null>(null); // ✅ 하드코딩된 테스트용 UUID
   const [forms, setForms] = useState<FormType[]>([]);
 
   useEffect(() => {
+    const sessionStr = sessionStorage.getItem("supabase_session");
+    if (sessionStr) {
+      try {
+        const sessionUser = JSON.parse(sessionStr);
+        if (sessionUser?.id) {
+          setUserId(sessionUser.id);
+        }
+      } catch (e) {
+        console.error("세션 파싱 실패:", e);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!userId) return;
     const fetchForms = async () => {
       const { data, error } = await supabase
         .from("forms")
@@ -84,7 +99,11 @@ const MyFormList = () => {
             {formatDate(form.start_time)} ~ {formatDate(form.end_time)}
           </p>
           <div className="flex gap-2">
-            <Button onClick={() => navigate(`/results/${form.id}`)} variant="outline" size="sm">
+            <Button
+              onClick={() => navigate(`/results/${form.id}`)}
+              variant="outline"
+              size="sm"
+            >
               결과 확인
             </Button>
             <ShareLink formId={form.id} />
