@@ -11,7 +11,7 @@ import SignIn from "@/pages/auth/sign-in";
 import SignUp from "@/pages/auth/sign-up";
 import { NAVBAR_PADDING_TOP_CLASS } from "./constants/layout";
 import { useEffect } from "react";
-import { useAuthStore } from "./components/store/\bauthStore";
+import { useAuthStore } from "./components/store/authStore";
 
 function App() {
   const setUser = useAuthStore((state) => state.setUser);
