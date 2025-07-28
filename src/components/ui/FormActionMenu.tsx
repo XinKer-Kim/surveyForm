@@ -41,7 +41,9 @@ const FormActionMenu = ({ formId }: { formId: string }) => {
         <DropdownMenuItem onClick={() => navigate(`/builder/${formId}`)}>
           편집
         </DropdownMenuItem>
-        <DropdownMenuItem disabled>미리보기</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate(`/preview/${formId}`)}>
+          미리보기
+        </DropdownMenuItem>
         <DropdownMenuItem disabled>설문 중지</DropdownMenuItem>
         <DropdownMenuItem disabled>강제 종료</DropdownMenuItem>
         <DropdownMenuItem onClick={() => alert("복사 기능 구현 예정")}>

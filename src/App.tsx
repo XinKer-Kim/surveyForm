@@ -50,6 +50,8 @@ function App() {
             <Route path="/bookmarks" element={<MyTakenList />} />
             {/* 참여한 설문(목록 페이지)*/}
 
+            <Route path="/preview/:formId" element={<FormPreviewPage />} />
+
             <Route path="/sign-in" element={<SignIn />} />
             {/* 로그인 */}
             <Route path="/sign-up" element={<SignUp />} />
