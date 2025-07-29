@@ -19,6 +19,11 @@ interface QuestionMultipleChoiceProps {
   disabled?: boolean;
 }
 
+/**
+ * 객관식 (복수 선택 포함) 선택지 및 폼 제어 컴포넌트.
+ * @param props QuestionMultipleChoiceProps Type
+ * @returns
+ */
 const QuestionMultipleChoice: FC<QuestionMultipleChoiceProps> = ({
   options,
   hasEtc,

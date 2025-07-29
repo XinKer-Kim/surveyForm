@@ -64,6 +64,7 @@ const FormBuilderPage = () => {
               type,
               order_number,
               required,
+              allow_multiple,
               unit,
               min,
               max,
@@ -96,6 +97,7 @@ const FormBuilderPage = () => {
         setEndType(
           form?.end_time ? SurveyPeriod.CUSTOM : SurveyPeriod.UNLIMITED
         );
+
         setFormElements((rawQuestions as QuestionData[]) ?? []);
       };
 
@@ -146,8 +148,6 @@ const FormBuilderPage = () => {
     }
     let resolvedFormId = formId;
 
-    console.log(`${startType} ${endType}`);
-
     if (formId === "new" || isTemplateMode) {
       const { data: formData, error: formError } = await supabase
         .from("forms")
@@ -188,6 +188,7 @@ const FormBuilderPage = () => {
             text: q.text,
             type: q.type,
             order_number: i + 1,
+            allow_multiple: q.allow_multiple ?? null,
             required: q.required ?? false,
             unit: q.unit ?? null,
             min: q.min ?? null,
