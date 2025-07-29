@@ -35,15 +35,11 @@ const TakeSurveyPage = () => {
     max,
     left_label,
     right_label,
-    options (
-      id,
-      label
-    )
+    options(id, label)
   `
         )
         .eq("form_id", formId)
         .order("order_number", { ascending: true });
-
       if (form) setFormTitle(form.title);
       if (qs) setQuestions(qs);
     };
@@ -189,8 +185,8 @@ const TakeSurveyPage = () => {
                 })}
               </div>
               <div className="flex justify-between text-sm text-gray-500 px-2">
-                <span>{q.leftLabel}</span>
-                <span>{q.rightLabel}</span>
+                <span>{q.left_label}</span>
+                <span>{q.right_label}</span>
               </div>
             </div>
           )}
