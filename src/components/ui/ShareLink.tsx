@@ -7,6 +7,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Share2 } from "lucide-react";
+import Swal from "sweetalert2";
 interface ShareLinkProps {
   formId: string;
 }
@@ -16,7 +17,12 @@ const ShareLink = ({ formId }: { formId: string }) => {
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(url);
-    alert("링크가 복사되었습니다!");
+    Swal.fire({
+      icon: "success",
+      title: "링크가 복사되었습니다!",
+      confirmButtonText: "확인",
+    });
+
     setOpen(false);
   };
 
