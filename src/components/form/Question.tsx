@@ -145,14 +145,13 @@ const Question: FC<QuestionProps> = ({
       {questionType === "dropdown" && (
         <QuestionDropdown
           options={options}
-          hasEtc={hasEtc}
           onOptionChange={handleOptionChange}
           onDeleteOption={handleDeleteOption}
           onAddOption={handleAddOption}
-          onToggleEtc={() => setHasEtc(!hasEtc)}
           disabled={isLocked}
         />
       )}
+
       {questionType === "star" && (
         <QuestionStarRating
           unit={starUnit}
