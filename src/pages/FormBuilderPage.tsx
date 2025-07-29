@@ -8,12 +8,10 @@ import { v4 as uuidv4 } from "uuid";
 import { formatDate, formatTime, parseDateTime } from "@/utils/dateUtils";
 import { SurveyPeriod } from "@/constants/survey";
 import { useAuthStore } from "@/components/store/authStore";
-import Swal from "sweetalert2";
+
 const FormBuilderPage = () => {
   const { formId, templateId } = useParams();
   const navigate = useNavigate();
-  const user = useAuthStore((state) => state.user);
-  const userId = user?.id ?? null;
   const user = useAuthStore((state) => state.user);
   const userId = user?.id ?? null;
 
@@ -141,12 +139,7 @@ const FormBuilderPage = () => {
   const handleSaveForm = async () => {
     console.log("userId:", userId);
     if (!userId) {
-      Swal.fire({
-        icon: "warning",
-        title: "접근 불가",
-        text: "이 기능을 이용하려면 먼저 로그인해주세요.",
-        confirmButtonText: "확인",
-      });
+      alert("로그인이 필요합니다.");
       return;
     }
     let resolvedFormId = formId;
@@ -158,16 +151,12 @@ const FormBuilderPage = () => {
         .from("forms")
         .insert({
           user_id: userId, // TODO: 현재는 하드코딩, 추후 로그인 기능 추가 시 변경 필요
-          user_id: userId, // TODO: 현재는 하드코딩, 추후 로그인 기능 추가 시 변경 필요
           title,
           description,
         })
         .select()
         .single();
 
-      if (formError) {
-        console.error("폼 생성 에러:", formError);
-        alert(`폼 생성 실패: ${formError.message}`);
       if (formError) {
         console.error("폼 생성 에러:", formError);
         alert(`폼 생성 실패: ${formError.message}`);
