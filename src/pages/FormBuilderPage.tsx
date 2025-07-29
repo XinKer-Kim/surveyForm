@@ -121,6 +121,12 @@ const FormBuilderPage = () => {
     setDescription(e.target.value);
 
   const handleAddInput = () => {
+    const isAnyLocked = formElements.some((q) => (q.answers ?? []).length > 0);
+
+    if (isAnyLocked) {
+      alert("응답이 존재하는 설문에는 질문을 추가할 수 없습니다.");
+      return;
+    }
     setFormElements([
       ...formElements,
       {
