@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 import { formatDate, formatTime, parseDateTime } from "@/utils/dateUtils";
 import { SurveyPeriod } from "@/constants/survey";
 import { useAuthStore } from "@/components/store/authStore";
-import Swal from "sweetalert2";
+
 const FormBuilderPage = () => {
   const { formId, templateId } = useParams();
   const navigate = useNavigate();
@@ -139,12 +139,7 @@ const FormBuilderPage = () => {
   const handleSaveForm = async () => {
     console.log("userId:", userId);
     if (!userId) {
-      Swal.fire({
-        icon: "warning",
-        title: "접근 불가",
-        text: "이 기능을 이용하려면 먼저 로그인해주세요.",
-        confirmButtonText: "확인",
-      });
+      alert("로그인이 필요합니다.");
       return;
     }
     let resolvedFormId = formId;
