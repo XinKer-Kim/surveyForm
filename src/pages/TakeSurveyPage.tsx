@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/supabaseClient";
 import { Button } from "@/components/ui/button";
 import StarRating from "@/components/ui/starRating.tsx"; // StarRating 컴포넌트 임포트
+
 import type { QuestionData } from "@/types/question";
 import type { FormData } from "@/types/form";
 import { Checkbox } from "@/components/ui/checkbox";

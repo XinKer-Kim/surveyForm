@@ -36,13 +36,14 @@ const ResultPage = () => {
         .in(
           "question_id",
           (qData || []).map((q) => q.id)
-        )
-        .eq("is_submitted", true); // 제출된 응답만
-
+        );
+      console.log(aData);
       setAnswers(aData || []);
       const ids = Array.from(
         new Set((aData || []).map((a) => a.respondent_id))
       );
+      //TODO: 미응답 null 처리할 때, text_answer,option_id가 null일 때 체크!
+      console.log(ids);
       setRespondentIds(ids);
     };
 
@@ -53,12 +54,11 @@ const ResultPage = () => {
     const relatedAnswers = answers.filter((a) => a.question_id === q.id);
     const total = relatedAnswers.length;
     const totalRespondents = respondentIds.length;
-    const unanswered = respondentIds.length - total; // 전체 응답자 수 - 해당 질문 응답 수
+    const unanswered = total - respondentIds.length; // 전체 응답자 수 - 해당 질문 응답 수
     const responseRate =
       totalRespondents > 0
-        ? ((total / totalRespondents) * 100).toFixed(1)
+        ? ((totalRespondents / total) * 100).toFixed(1)
         : "0.0";
-    // 응답률 = (응답 수 / 전체 응답자 수) * 100
 
     const typeLabelMap: Record<string, string> = {
       radio: "객관식",
@@ -185,7 +185,8 @@ const ResultPage = () => {
             Q{index + 1}. {q.text}
           </div>
           <div className="text-sm text-gray-400 mt-1">
-            응답 {total} · 미응답 {unanswered} · 응답률 {responseRate}%
+            응답 {totalRespondents} · 미응답 {unanswered} · 응답률{" "}
+            {responseRate}%
           </div>
         </div>
         {chart}
