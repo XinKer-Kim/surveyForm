@@ -38,7 +38,10 @@ export const formatTime = (date: Date | string | undefined): string => {
     minute: "2-digit",
   });
 };
-
+export const isOngoing = (endTime: Date | undefined): boolean => {
+  if (!endTime) return true;
+  return endTime > new Date();
+};
 /**
  * 'yyyy. MM. dd.' 형식의 날짜 문자열과 'aaaa hh:mm' 형식의 시간 문자열을 하나의 표준 Date 객체로 변환.
  * @param dateStr - 날짜 문자열 (예: '2025. 07. 25.')

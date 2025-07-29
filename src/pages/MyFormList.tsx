@@ -5,7 +5,7 @@ import ShareLink from "@/components/ui/ShareLink";
 import FormActionMenu from "@/components/ui/FormActionMenu";
 import { useNavigate } from "react-router-dom";
 import type { FormData } from "@/types/form";
-import { formatDate } from "@/utils/dateUtils";
+import { isOngoing, formatDate } from "@/utils/dateUtils";
 
 const MyFormList = () => {
   const [userId, setUserId] = useState<string | null>(null); // ✅ 하드코딩된 테스트용 UUID
@@ -52,16 +52,6 @@ const MyFormList = () => {
   //     hour12: true,
   //   });
   // };
-
-  // const isOngoing = (endTime: string | null | undefined): boolean => {
-  //   if (!endTime) return true;
-  //   return new Date(endTime) > new Date();
-  // };
-
-  const isOngoing = (endTime: Date | undefined): boolean => {
-    if (!endTime) return true;
-    return endTime > new Date();
-  };
 
   const navigate = useNavigate();
 
