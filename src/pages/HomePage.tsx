@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { templates } from "@/constants/templates";
-
+import { Sparkles } from "lucide-react";
 function HomePage() {
   const navigate = useNavigate();
 
@@ -29,9 +29,22 @@ function HomePage() {
             </div>
           </Card>
         ))}
+        <Card
+          // key={template.id}
+          className="flex flex-col items-center justify-center gap-3 w-[125px] h-[130px] p-4 cursor-pointer hover:shadow-md"
+          onClick={() => navigate("/builder/new")}
+        >
+          <Sparkles className="w-6 h-6 text-gray-500" />
+          <div className="text-sm font-medium text-center">직접 만들기</div>
+        </Card>
       </div>
     </div>
   );
 }
 
 export default HomePage;
+// {
+//   id: "custom",
+//   label: "직접 만들기",
+//   icon: <Sparkles className="w-6 h-6 text-gray-500" />,
+// },
