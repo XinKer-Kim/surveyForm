@@ -81,7 +81,7 @@ function NavBar() {
                 {/* 드롭다운 박스 */}
                 {dropdownOpen && (
                   <div className="absolute top-8 right-0 mt-2 w-60 bg-white border rounded-lg shadow-md p-4 z-50">
-                    <div className=" flex flex-col gap-2 text-sm text-gray-700">
+                    <div className=" flex flex-col gap-6 text-sm text-gray-700">
                       <p className="flex gap-1">
                         <strong className="flex items-center gap-1">
                           <Mail size={16} />
@@ -113,13 +113,15 @@ function NavBar() {
                         </strong>{" "}
                         {user.birthdate || "없음"}
                       </p>
-                      <hr className="my-2" />
-                      <button
-                        onClick={handleLogout}
-                        className="text-black-500 hover:text-black-700 text-sm font-medium cursor-pointer"
-                      >
-                        로그아웃
-                      </button>
+                      <div className="flex flex-col">
+                        <hr className="my-2" />
+                        <button
+                          onClick={handleLogout}
+                          className="text-black-500 hover:text-black-700 text-sm font-medium cursor-pointer"
+                        >
+                          로그아웃
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}
