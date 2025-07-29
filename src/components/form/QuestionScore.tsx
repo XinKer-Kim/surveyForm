@@ -21,6 +21,7 @@ interface Props {
       right_label: string;
     }>
   ) => void;
+  disabled?: boolean;
 }
 
 const QuestionScore: FC<Props> = ({

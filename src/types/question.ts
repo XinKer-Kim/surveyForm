@@ -1,7 +1,11 @@
+import type { Answer } from "./answer";
+import type { Option } from "./option";
+
 export type QuestionType =
   | "text_short"
   | "text_long"
   | "radio"
+  | "checkbox"
   | "dropdown"
   | "star"
   | "score";
@@ -17,7 +21,8 @@ export interface QuestionData {
   required: boolean; // 필수 응답 여부
 
   // 객관식 및 드롭다운용
-  options?: string[];
+  // options?: string[];
+  options?: Partial<Option>[];
   hasEtc?: boolean; // 객관식만 해당 (기타 옵션 추가 여부)
   allowMultiple?: boolean; // 객관식만 해당 (복수 선택 허용 여부)
 
@@ -29,4 +34,7 @@ export interface QuestionData {
   max?: number;
   leftLabel?: string;
   rightLabel?: string;
+
+  // 설문 응답 리스트
+  answers?: Partial<Answer>[];
 }
