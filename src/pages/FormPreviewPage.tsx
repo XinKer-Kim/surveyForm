@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/supabaseClient";
 import { Button } from "@/components/ui/button";
+import Swal from "sweetalert2";
 
 const FormPreviewPage = () => {
   const { formId } = useParams();
@@ -37,8 +38,14 @@ const FormPreviewPage = () => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
   };
   const handlePreviewSubmit = () => {
-    alert("설문에 참여해 주셔서 감사합니다.");
-    navigate("/list"); // ← 원하는 경로로 이동
+    Swal.fire({
+      icon: "success",
+      title: "참여 완료!",
+      text: "설문에 참여해 주셔서 감사합니다.",
+      confirmButtonText: "확인",
+    }).then(() => {
+      navigate("/list"); // 사용자가 '확인' 누르면 이동
+    });
   };
 
   return (
