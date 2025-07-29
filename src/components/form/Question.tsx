@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from "react";
+import { type FC, useState, useEffect } from "react";
 import QuestionShortAnswer from "./QuestionShortAnswer";
 import QuestionLongAnswer from "./QuestionLongAnswer";
 import QuestionMultipleChoice from "@/components/form/QuestionMultipleChoice";
@@ -36,7 +36,8 @@ const Question: FC<QuestionProps> = ({
   onDuplicate,
   onDelete,
 }) => {
-  const isLocked = question.hasAnswer;
+  // const isLocked = question.hasAnswer;
+  const isLocked = (question.answers ?? []).length > 0;
 
   const [questionType, setQuestionType] = useState(question.type);
   const [questionText, setQuestionText] = useState(question.text || "");
@@ -129,7 +130,7 @@ const Question: FC<QuestionProps> = ({
 
       {questionType === "text_short" && <QuestionShortAnswer />}
       {questionType === "text_long" && <QuestionLongAnswer />}
-      {questionType === "radio" && (
+      {["radio", "checkbox"].includes(questionType) && (
         <QuestionMultipleChoice
           options={options}
           hasEtc={hasEtc}

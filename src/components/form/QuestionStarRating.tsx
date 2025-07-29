@@ -11,6 +11,7 @@ import { Star } from "lucide-react";
 interface Props {
   unit: 0.5 | 1;
   onChangeUnit: (unit: 0.5 | 1) => void;
+  disabled?: boolean;
 }
 
 const QuestionStarRating: FC<Props> = ({ unit, onChangeUnit }) => {
