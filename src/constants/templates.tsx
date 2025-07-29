@@ -76,9 +76,4 @@ export const templates = [
     label: "별점형",
     icon: <Star className="w-6 h-6 text-green-500" />,
   },
-  {
-    id: "custom",
-    label: "직접 만들기",
-    icon: <Sparkles className="w-6 h-6 text-gray-500" />,
-  },
 ];

@@ -14,6 +14,8 @@ const FormBuilderPage = () => {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
   const userId = user?.id ?? null;
+  const user = useAuthStore((state) => state.user);
+  const userId = user?.id ?? null;
 
   // Questiontitle 상태 관리
   const [title, setTitle] = useState("");
@@ -156,12 +158,16 @@ const FormBuilderPage = () => {
         .from("forms")
         .insert({
           user_id: userId, // TODO: 현재는 하드코딩, 추후 로그인 기능 추가 시 변경 필요
+          user_id: userId, // TODO: 현재는 하드코딩, 추후 로그인 기능 추가 시 변경 필요
           title,
           description,
         })
         .select()
         .single();
 
+      if (formError) {
+        console.error("폼 생성 에러:", formError);
+        alert(`폼 생성 실패: ${formError.message}`);
       if (formError) {
         console.error("폼 생성 에러:", formError);
         alert(`폼 생성 실패: ${formError.message}`);
