@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useState, useEffect } from "react";
 import Input from "./Input";
 import {
   Select,
@@ -11,14 +11,14 @@ import {
 interface Props {
   min: number;
   max: number;
-  leftLabel: string;
-  rightLabel: string;
+  left_label: string;
+  right_label: string;
   onChange: (
     partial: Partial<{
       min: number;
       max: number;
-      leftLabel: string;
-      rightLabel: string;
+      left_label: string;
+      right_label: string;
     }>
   ) => void;
 }
@@ -26,14 +26,14 @@ interface Props {
 const QuestionScore: FC<Props> = ({
   min,
   max,
-  leftLabel,
-  rightLabel,
+  left_label,
+  right_label,
   onChange,
 }) => {
   const [scoreMin, setScoreMin] = useState<number>(min ?? 0);
   const [scoreMax, setScoreMax] = useState<number>(max ?? 5);
-  const [labelLeft, setLabelLeft] = useState(leftLabel ?? "");
-  const [labelRight, setLabelRight] = useState(rightLabel ?? "");
+  const [labelLeft, setLabelLeft] = useState(left_label ?? "");
+  const [labelRight, setLabelRight] = useState(right_label ?? "");
 
   const handleMinChange = (val: string) => {
     const newMin = parseInt(val);
@@ -52,7 +52,15 @@ const QuestionScore: FC<Props> = ({
     setScoreMax(newMax);
     onChange({ max: newMax });
   };
-
+  useEffect(() => {
+    console.log(min, max, left_label, right_label);
+    onChange({
+      min: scoreMin,
+      max: scoreMax,
+      left_label: labelLeft,
+      right_label: labelRight,
+    });
+  }, []);
   return (
     <div className="space-y-3 mt-2">
       {/* 점수 미리보기 표시 */}
@@ -108,7 +116,7 @@ const QuestionScore: FC<Props> = ({
           value={labelLeft}
           onChange={(e) => {
             setLabelLeft(e.target.value);
-            onChange({ leftLabel: e.target.value });
+            onChange({ left_label: e.target.value });
           }}
         />
         <Input
@@ -117,7 +125,7 @@ const QuestionScore: FC<Props> = ({
           value={labelRight}
           onChange={(e) => {
             setLabelRight(e.target.value);
-            onChange({ rightLabel: e.target.value });
+            onChange({ right_label: e.target.value });
           }}
         />
       </div>

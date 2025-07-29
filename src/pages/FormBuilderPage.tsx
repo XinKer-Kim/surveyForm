@@ -187,7 +187,11 @@ const FormBuilderPage = () => {
             type: q.type,
             order_number: i + 1,
             required: q.required ?? false,
-            unit: q.unit ?? null, // ✅ 별점 단위 추가
+            unit: q.unit ?? null,
+            min: q.min ?? null,
+            max: q.max ?? null,
+            left_label: q.left_label ?? null,
+            right_label: q.right_label ?? null,
             options: ["radio", "dropdown", "checkbox"].includes(q.type)
               ? q.options?.map((opt, j) => ({
                   id: opt.id,
@@ -195,7 +199,7 @@ const FormBuilderPage = () => {
                   value: opt.value ?? null,
                   order_number: j + 1,
                 })) ?? []
-              : [], // 주관식 등에는 options 보내지 않음
+              : [],
           })),
         },
       }
