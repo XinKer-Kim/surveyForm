@@ -1,50 +1,63 @@
 import { FC } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+
+interface OptionItem {
+  id: string;
+  label: string;
+}
 
 interface Props {
-  options: string[];
-  hasEtc: boolean;
-  onOptionChange: (value: string, idx: number) => void;
+  options: OptionItem[];
+  onOptionChange: (label: string, idx: number) => void;
   onDeleteOption: (idx: number) => void;
   onAddOption: () => void;
-  onToggleEtc: () => void;
+  disabled?: boolean;
 }
+
 const QuestionDropdown: FC<Props> = ({
   options,
   onOptionChange,
   onDeleteOption,
   onAddOption,
+  disabled,
 }) => {
   return (
-    <div className="space-y-3 mt-4">
+    <div className="space-y-2">
       {options.map((opt, idx) => (
-        <div key={idx} className="flex items-center gap-2">
+        <div key={opt.id} className="flex items-center gap-2">
           <Input
-            value={opt}
+            type="text"
+            value={opt.label}
             onChange={(e) => onOptionChange(e.target.value, idx)}
             placeholder={`항목 ${idx + 1}`}
-            className="flex-1"
+            disabled={disabled}
+            className="flex-grow"
           />
           <Button
             type="button"
-            size="icon"
-            variant="ghost"
+            variant="destructive"
+            size="sm"
             onClick={() => onDeleteOption(idx)}
-            className="text-gray-500 hover:text-red-500"
+            disabled={disabled}
           >
-            ✕
+            삭제
           </Button>
         </div>
       ))}
-
-      <div className="flex items-center gap-3 mt-2">
-        <Button type="button" size="sm" variant="outline" onClick={onAddOption}>
+      <div className="flex gap-2 mt-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={onAddOption}
+          disabled={disabled}
+        >
           + 항목 추가
         </Button>
       </div>
     </div>
   );
 };
+
 export default QuestionDropdown;
