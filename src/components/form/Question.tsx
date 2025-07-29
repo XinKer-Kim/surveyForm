@@ -49,10 +49,10 @@ const Question: FC<QuestionProps> = ({
   const [scoreMin, setScoreMin] = useState(question.min ?? 0);
   const [scoreMax, setScoreMax] = useState(question.max ?? 5);
   const [scoreLeftLabel, setScoreLeftLabel] = useState(
-    question.leftLabel ?? ""
+    question.left_label ?? ""
   );
   const [scoreRightLabel, setScoreRightLabel] = useState(
-    question.rightLabel ?? ""
+    question.right_label ?? ""
   );
 
   useEffect(() => {
@@ -66,8 +66,8 @@ const Question: FC<QuestionProps> = ({
       unit: starUnit,
       min: scoreMin,
       max: scoreMax,
-      leftLabel: scoreLeftLabel,
-      rightLabel: scoreRightLabel,
+      left_label: scoreLeftLabel,
+      right_label: scoreRightLabel,
     });
   }, [
     questionType,
@@ -162,15 +162,15 @@ const Question: FC<QuestionProps> = ({
       )}
       {questionType === "score" && (
         <QuestionScore
-          min={scoreMin}
-          max={scoreMax}
-          leftLabel={scoreLeftLabel}
-          rightLabel={scoreRightLabel}
+          min={question.min ?? 0}
+          max={question.max ?? 5}
+          left_label={question.left_label ?? ""}
+          right_label={question.right_label ?? ""}
           onChange={(partial) => {
-            setScoreMin(partial.min);
-            setScoreMax(partial.max);
-            setScoreLeftLabel(partial.leftLabel);
-            setScoreRightLabel(partial.rightLabel);
+            onQuestionChange({
+              ...question,
+              ...partial,
+            });
           }}
           disabled={isLocked}
         />
