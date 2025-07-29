@@ -3,6 +3,10 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/supabaseClient";
 import { Button } from "@/components/ui/button";
 import StarRating from "@/components/ui/starRating.tsx"; // StarRating 컴포넌트 임포트
+import type { QuestionData } from "@/types/question";
+import type { FormData } from "@/types/form";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import Swal from "sweetalert2";
 
 const TakeSurveyPage = () => {
@@ -10,7 +14,7 @@ const TakeSurveyPage = () => {
   const navigate = useNavigate();
 
   const [formTitle, setFormTitle] = useState("");
-  const [questions, setQuestions] = useState<any[]>([]);
+  const [questions, setQuestions] = useState<QuestionData[]>([]);
   const [answers, setAnswers] = useState<Record<string, any>>({}); // question.id → 사용자 응답
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -44,22 +48,36 @@ const TakeSurveyPage = () => {
         .from("questions")
         .select(
           `
-    id,
-    text,
-    type,
-    required,
-    unit,
-    min,
-    max,
-    left_label,
-    right_label,
-    options(id, label)
-  `
+            id,
+            text,
+            type,
+            required,
+            allow_multiple,
+            unit,
+            min,
+            max,
+            left_label,
+            right_label,
+            options(id, label)
+          `
         )
         .eq("form_id", formId)
         .order("order_number", { ascending: true });
-      if (form) setFormTitle(form.title);
-      if (qs) setQuestions(qs);
+      if (form) setFormTitle((form as FormData).title);
+
+      if (qs) {
+        const questions: QuestionData[] = qs as QuestionData[];
+
+        questions.forEach((q) => {
+          if (q.type === "radio" && q.options) {
+            /**
+             * 선택지가 있는 객관식에 대한 추가적인 로직 필요 시 작성.
+             */
+          }
+        });
+
+        setQuestions(questions);
+      }
     };
 
     fetchForm();
@@ -142,18 +160,23 @@ const TakeSurveyPage = () => {
           {/* 객관식 */}
           {q.type === "radio" && (
             <div className="space-y-2">
-              {q.options.map((opt) => (
-                <label key={opt.id} className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name={q.id}
-                    value={opt.id}
-                    checked={answers[q.id] === opt.id}
-                    onChange={() => handleAnswerChange(q.id, opt.id)}
-                  />
-                  {opt.label}
-                </label>
-              ))}
+              {q.options
+                ? q.options.map((opt) => {
+                    return (
+                      <div key={opt.id} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={opt.id}
+                          className="flex items-center gap-2"
+                          checked={undefined}
+                          onCheckedChange={() =>
+                            handleAnswerChange(q.id, opt.id)
+                          }
+                        ></Checkbox>
+                        <Label htmlFor={opt.id}>{opt.label}</Label>
+                      </div>
+                    );
+                  })
+                : []}
             </div>
           )}
           {/* 주관식 서술형 */}
@@ -174,11 +197,13 @@ const TakeSurveyPage = () => {
               <option value="" disabled>
                 선택하세요
               </option>
-              {q.options.map((opt) => (
-                <option key={opt.id} value={opt.id}>
-                  {opt.label}
-                </option>
-              ))}
+              {q.options
+                ? q.options.map((opt) => (
+                    <option key={opt.id} value={opt.id}>
+                      {opt.label}
+                    </option>
+                  ))
+                : []}
             </select>
           )}
           {q.type === "star" && (
