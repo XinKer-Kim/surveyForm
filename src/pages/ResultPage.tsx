@@ -16,6 +16,7 @@ const ResultPage = () => {
   const { formId } = useParams();
   const [questions, setQuestions] = useState<any[]>([]);
   const [answers, setAnswers] = useState<any[]>([]);
+  const [respondentIds, setRespondentIds] = useState<string[]>([]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -35,9 +36,14 @@ const ResultPage = () => {
         .in(
           "question_id",
           (qData || []).map((q) => q.id)
-        );
+        )
+        .eq("is_submitted", true); // 제출된 응답만
 
       setAnswers(aData || []);
+      const ids = Array.from(
+        new Set((aData || []).map((a) => a.respondent_id))
+      );
+      setRespondentIds(ids);
     };
 
     if (formId) loadData();
@@ -45,8 +51,14 @@ const ResultPage = () => {
 
   const renderQuestionResult = (q: any, index: number) => {
     const relatedAnswers = answers.filter((a) => a.question_id === q.id);
-    const total = answers.filter((a) => a.question_id === q.id).length;
-    const unanswered = 0; // 향후 미응답 처리 시 계산 가능
+    const total = relatedAnswers.length;
+    const totalRespondents = respondentIds.length;
+    const unanswered = respondentIds.length - total; // 전체 응답자 수 - 해당 질문 응답 수
+    const responseRate =
+      totalRespondents > 0
+        ? ((total / totalRespondents) * 100).toFixed(1)
+        : "0.0";
+    // 응답률 = (응답 수 / 전체 응답자 수) * 100
 
     const typeLabelMap: Record<string, string> = {
       radio: "객관식",
@@ -173,7 +185,7 @@ const ResultPage = () => {
             Q{index + 1}. {q.text}
           </div>
           <div className="text-sm text-gray-400 mt-1">
-            응답 {relatedAnswers.length} · 미응답 {unanswered}
+            응답 {total} · 미응답 {unanswered} · 응답률 {responseRate}%
           </div>
         </div>
         {chart}

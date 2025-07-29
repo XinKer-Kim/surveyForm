@@ -7,6 +7,7 @@ import type { QuestionData } from "@/types/question";
 import type { FormData } from "@/types/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import Swal from "sweetalert2";
 
 const TakeSurveyPage = () => {
   const { formId } = useParams();
@@ -15,6 +16,23 @@ const TakeSurveyPage = () => {
   const [formTitle, setFormTitle] = useState("");
   const [questions, setQuestions] = useState<QuestionData[]>([]);
   const [answers, setAnswers] = useState<Record<string, any>>({}); // question.id → 사용자 응답
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+      if (user) {
+        setUserId(user.id);
+      } else {
+        console.error("로그인된 사용자 없음", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     if (!formId) return;
@@ -70,16 +88,29 @@ const TakeSurveyPage = () => {
   };
 
   const handleSubmit = async () => {
-    const user_id = "1dd927e3-2b9d-4d7a-a23d-578e1934bac3"; // 추후 auth로 교체
+    if (!userId) {
+      Swal.fire({
+        icon: "error",
+        title: "로그인 후 응답 가능합니다.",
+        confirmButtonText: "확인",
+      });
+
+      return;
+    }
+    // 추후 auth로 교체
 
     const { data: responseRow, error } = await supabase
       .from("responses")
-      .insert({ user_id, form_id: formId })
+      .insert({ user_id: userId, form_id: formId })
       .select()
       .single();
 
     if (error || !responseRow) {
-      alert("응답 저장 실패");
+      Swal.fire({
+        icon: "error",
+        title: "응답 저장 실패",
+        confirmButtonText: "확인",
+      });
       return;
     }
 
@@ -100,8 +131,11 @@ const TakeSurveyPage = () => {
     });
 
     await supabase.from("answers").insert(answersToInsert);
-
-    alert("응답이 제출되었습니다!");
+    Swal.fire({
+      icon: "success",
+      title: "응답이 제출되었습니다!",
+      confirmButtonText: "확인",
+    });
     navigate("/bookmarks");
   };
 

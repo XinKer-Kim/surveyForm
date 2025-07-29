@@ -5,20 +5,32 @@ import { useNavigate } from "react-router-dom";
 const MyTakenList = () => {
   const [responses, setResponses] = useState<any[]>([]);
   const navigate = useNavigate();
-  const [userId] = useState<string>("1dd927e3-2b9d-4d7a-a23d-578e1934bac3"); // ✅ 하드코딩된 테스트용 UUID
+  const [userId, setUserId] = useState<string | null>(null); // ✅ 하드코딩된 테스트용 UUID
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        setUserId(user.id);
+      } else {
+        console.error("유저 정보 없음", error);
+      }
+    };
+
+    fetchUserId();
+  }, []);
+
   useEffect(() => {
     const fetchResponses = async () => {
-      // const {
-      //   data: { user },
-      //   error: userError,
-      // } = await supabase.auth.getUser();
-
-      // if (userError || !user) return;
+      if (!userId) return;
 
       const { data, error } = await supabase
         .from("responses")
         .select("id, form_id, submitted_at, forms(title, created_at)")
-        // .eq("user_id", user.id);
         .eq("user_id", userId);
 
       if (!error && data) {
@@ -29,8 +41,7 @@ const MyTakenList = () => {
     };
 
     fetchResponses();
-  }, []);
-
+  }, [userId]);
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">내가 참여한 설문</h1>
