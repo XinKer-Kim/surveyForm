@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/supabaseClient";
 import { Button } from "@/components/ui/button";
 import StarRating from "@/components/ui/starRating.tsx"; // StarRating 컴포넌트 임포트
+import Swal from "sweetalert2";
 
 const TakeSurveyPage = () => {
   const { formId } = useParams();
@@ -70,7 +71,12 @@ const TakeSurveyPage = () => {
 
   const handleSubmit = async () => {
     if (!userId) {
-      alert("로그인 후 응답 가능합니다.");
+      Swal.fire({
+        icon: "error",
+        title: "로그인 후 응답 가능합니다.",
+        confirmButtonText: "확인",
+      });
+
       return;
     }
     // 추후 auth로 교체
@@ -82,7 +88,11 @@ const TakeSurveyPage = () => {
       .single();
 
     if (error || !responseRow) {
-      alert("응답 저장 실패");
+      Swal.fire({
+        icon: "error",
+        title: "응답 저장 실패",
+        confirmButtonText: "확인",
+      });
       return;
     }
 
@@ -103,8 +113,11 @@ const TakeSurveyPage = () => {
     });
 
     await supabase.from("answers").insert(answersToInsert);
-
-    alert("응답이 제출되었습니다!");
+    Swal.fire({
+      icon: "success",
+      title: "응답이 제출되었습니다!",
+      confirmButtonText: "확인",
+    });
     navigate("/bookmarks");
   };
 
