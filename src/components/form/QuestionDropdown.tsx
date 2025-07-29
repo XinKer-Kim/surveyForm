@@ -1,4 +1,4 @@
-import { FC } from "react";
+import type { FC } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -9,9 +9,11 @@ interface OptionItem {
 
 interface Props {
   options: OptionItem[];
-  onOptionChange: (label: string, idx: number) => void;
+  hasEtc: boolean;
+  onOptionChange: (value: string, idx: number) => void;
   onDeleteOption: (idx: number) => void;
   onAddOption: () => void;
+  onToggleEtc: () => void;
   disabled?: boolean;
 }
 

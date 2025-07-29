@@ -8,6 +8,8 @@ import { v4 as uuidv4 } from "uuid";
 import { formatDate, formatTime, parseDateTime } from "@/utils/dateUtils";
 import { SurveyPeriod } from "@/constants/survey";
 import { useAuthStore } from "@/components/store/authStore";
+import type { QuestionData } from "@/types/question";
+import type { FormData } from "@/types/form";
 
 const FormBuilderPage = () => {
   const { formId, templateId } = useParams();
@@ -28,7 +30,7 @@ const FormBuilderPage = () => {
   const [endTime, setEndTime] = useState<string>(formatTime(endDateTime));
 
   const [isTemplateMode, setIsTemplateMode] = useState(false); // 템플릿 모드 여부
-  const [formElements, setFormElements] = useState<any[]>([]);
+  const [formElements, setFormElements] = useState<QuestionData[]>([]);
 
   type Option = {
     id: string;
@@ -45,7 +47,7 @@ const FormBuilderPage = () => {
         // 폼 정보 불러오기
         const { data: form } = await supabase
           .from("forms")
-          .select("*")
+          .select<"*", FormData>("*")
           .eq("id", formId)
           .single();
 
@@ -57,44 +59,44 @@ const FormBuilderPage = () => {
           .from("questions")
           .select(
             `
-    id,
-    text,
-    type,
-    order_number,
-    required,
-    unit,
-    min,
-    max,
-    left_label,
-    right_label,
-    options (
-      id,
-      label,
-      value,
-      order_number
-    ),
-    answers(id)
-  `
+              id,
+              text,
+              type,
+              order_number,
+              required,
+              unit,
+              min,
+              max,
+              left_label,
+              right_label,
+              options (
+                id,
+                label,
+                value,
+                order_number
+              ),
+              answers(id)
+            `
           )
           .eq("form_id", formId)
           .order("order_number", { ascending: true });
 
-        const questionsWithFlags = (rawQuestions ?? []).map((q) => ({
-          ...q,
-          hasAnswer: (q.answers ?? []).length > 0,
-        }));
+        // const questionsWithFlags = (rawQuestions ?? []).map((q) => ({
+        //   ...q,
+        //   hasAnswer: (q.answers ?? []).length > 0,
+        // }));
 
-        setTitle(form.title);
-        setDescription(form.description);
-        setStartDateTime(form.start_time);
+        setTitle(form?.title ?? "");
+        setDescription(form?.description ?? "");
+        setStartDateTime(form?.start_time ?? undefined);
         setStartType(
-          form.start_time ? SurveyPeriod.CUSTOM : SurveyPeriod.START
+          form?.start_time ? SurveyPeriod.CUSTOM : SurveyPeriod.START
         );
-        setEndDateTime(form.end_time);
+        setEndDateTime(form?.end_time ?? undefined);
         setEndType(
-          form.end_time ? SurveyPeriod.CUSTOM : SurveyPeriod.UNLIMITED
+          form?.end_time ? SurveyPeriod.CUSTOM : SurveyPeriod.UNLIMITED
         );
-        setFormElements(questionsWithFlags);
+        setFormElements((rawQuestions as QuestionData[]) ?? []);
       };
 
       loadForm();
@@ -127,7 +129,7 @@ const FormBuilderPage = () => {
         text: "",
         required: false,
         order_number: formElements.length + 1,
-        hasAnswer: false,
+        // hasAnswer: false,
         options: [
           { id: uuidv4(), label: "" },
           { id: uuidv4(), label: "" },
@@ -267,7 +269,7 @@ const FormBuilderPage = () => {
               newElements.splice(index + 1, 0, {
                 ...element,
                 id: uuidv4(),
-                hasAnswer: false, // 복제된 건 응답 없음
+                // hasAnswer: false, // 복제된 건 응답 없음
               });
               setFormElements(newElements);
             }}
