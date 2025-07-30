@@ -101,6 +101,16 @@ const TakeSurveyPage = () => {
 
     fetchAnswers();
   }, [editMode, selectedResponseId]);
+  // ✅ 설문 종료 여부 체크
+  if (formEndTime && new Date(formEndTime) < new Date()) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[70vh] text-center text-gray-500">
+        <ClipboardX className="w-full h-full mb-4" />
+        <h2 className="text-xl font-semibold">설문이 종료되었습니다.</h2>
+        <p className="text-sm mt-2">더 이상 응답할 수 없습니다.</p>
+      </div>
+    );
+  }
 
   if (!editMode && existingResponses.length > 0) {
     return (
@@ -277,17 +287,6 @@ const TakeSurveyPage = () => {
 
     navigate("/bookmarks");
   };
-
-  // ✅ 설문 종료 여부 체크
-  if (formEndTime && new Date(formEndTime) < new Date()) {
-    return (
-      <div className="flex flex-col items-center justify-center h-[70vh] text-center text-gray-500">
-        <ClipboardX className="w-full h-full mb-4" />
-        <h2 className="text-xl font-semibold">설문이 종료되었습니다.</h2>
-        <p className="text-sm mt-2">더 이상 응답할 수 없습니다.</p>
-      </div>
-    );
-  }
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
