@@ -344,7 +344,6 @@ const TakeSurveyPage = () => {
             <div className="space-y-2">
               {q.options
                 ? q.options.map((opt: any) => {
-                    console.log(`q.allow_multiple : ${q.allow_multiple}`);
                     return (
                       <div key={opt.id} className="flex items-center space-x-2">
                         <Checkbox
@@ -363,8 +362,8 @@ const TakeSurveyPage = () => {
                         ></Checkbox>
                         <Label htmlFor={opt.id}>{opt.label}</Label>
                       </div>
-                    </>
-                  ))
+                    );
+                  })
                 : []}
             </div>
           )}
