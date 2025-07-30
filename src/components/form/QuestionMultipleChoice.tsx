@@ -53,6 +53,7 @@ const QuestionMultipleChoice: FC<QuestionMultipleChoiceProps> = ({
             size="sm"
             onClick={() => onDeleteOption(idx)}
             disabled={disabled}
+            className="cursor-pointer"
           >
             삭제
           </Button>
@@ -65,6 +66,7 @@ const QuestionMultipleChoice: FC<QuestionMultipleChoiceProps> = ({
           size="sm"
           onClick={onAddOption}
           disabled={disabled}
+          className="cursor-pointer"
         >
           + 선택지 추가
         </Button>
@@ -74,6 +76,7 @@ const QuestionMultipleChoice: FC<QuestionMultipleChoiceProps> = ({
           size="sm"
           onClick={onToggleEtc}
           disabled={disabled}
+          className="cursor-pointer"
         >
           {hasEtc ? "✔ 기타 허용됨" : "기타 허용"}
         </Button>
@@ -83,6 +86,7 @@ const QuestionMultipleChoice: FC<QuestionMultipleChoiceProps> = ({
           size="sm"
           onClick={onToggleMultiple}
           disabled={disabled}
+          className="cursor-pointer"
         >
           {allowMultiple ? "✔ 복수 선택 가능" : "복수 선택 허용"}
         </Button>

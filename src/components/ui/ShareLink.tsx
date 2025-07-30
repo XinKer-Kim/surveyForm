@@ -28,7 +28,12 @@ const ShareLink = ({ formId }: { formId: string }) => {
 
   return (
     <>
-      <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setOpen(true)}
+        className="cursor-pointer"
+      >
         <Share2 className="w-4 h-4" />
       </Button>
 
@@ -41,10 +46,16 @@ const ShareLink = ({ formId }: { formId: string }) => {
             readOnly
           />
           <DialogFooter className="flex justify-end gap-2 mt-4">
-            <Button variant="ghost" onClick={() => setOpen(false)}>
+            <Button
+              className="cursor-pointer"
+              variant="ghost"
+              onClick={() => setOpen(false)}
+            >
               취소
             </Button>
-            <Button onClick={handleCopy}>링크 복사</Button>
+            <Button className="cursor-pointer" onClick={handleCopy}>
+              링크 복사
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

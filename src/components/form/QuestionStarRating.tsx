@@ -36,12 +36,16 @@ const QuestionStarRating: FC<Props> = ({ unit, onChangeUnit }) => {
           value={unit.toString()}
           onValueChange={(v) => onChangeUnit(parseFloat(v) as 0.5 | 1)}
         >
-          <SelectTrigger className="w-[80px]">
+          <SelectTrigger className="w-[80px] cursor-pointer">
             <SelectValue placeholder="단위 선택" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="1">1</SelectItem>
-            <SelectItem value="0.5">0.5</SelectItem>
+            <SelectItem className="cursor-pointer" value="1">
+              1
+            </SelectItem>
+            <SelectItem className="cursor-pointer" value="0.5">
+              0.5
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>

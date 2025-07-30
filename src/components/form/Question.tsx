@@ -103,7 +103,7 @@ const Question: FC<QuestionProps> = ({
 
   return (
     <div className="mb-4 border rounded-md p-4">
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-end justify-between mb-2 gap-2">
         <Input
           label={`질문 ${question.order_number}`}
           value={questionText}
@@ -117,16 +117,28 @@ const Question: FC<QuestionProps> = ({
           onValueChange={(val) => setQuestionType(val as QuestionType)}
           disabled={isLocked}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[180px] cursor-pointer ">
             <SelectValue placeholder="질문 유형 선택" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="text_short">주관식 (단답)</SelectItem>
-            <SelectItem value="text_long">주관식 (서술)</SelectItem>
-            <SelectItem value="radio">객관식</SelectItem>
-            <SelectItem value="dropdown">드롭다운</SelectItem>
-            <SelectItem value="star">별점</SelectItem>
-            <SelectItem value="score">점수</SelectItem>
+            <SelectItem className="cursor-pointer" value="text_short">
+              주관식 (단답)
+            </SelectItem>
+            <SelectItem className="cursor-pointer" value="text_long">
+              주관식 (서술)
+            </SelectItem>
+            <SelectItem className="cursor-pointer" value="radio">
+              객관식
+            </SelectItem>
+            <SelectItem className="cursor-pointer" value="dropdown">
+              드롭다운
+            </SelectItem>
+            <SelectItem className="cursor-pointer" value="star">
+              별점
+            </SelectItem>
+            <SelectItem className="cursor-pointer" value="score">
+              점수
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -184,7 +196,7 @@ const Question: FC<QuestionProps> = ({
           type="button"
           variant="outline"
           size="sm"
-          className="mr-2"
+          className="mr-2 cursor-pointer"
           onClick={onDuplicate}
         >
           복제
@@ -195,6 +207,7 @@ const Question: FC<QuestionProps> = ({
           size="sm"
           onClick={onDelete}
           disabled={isLocked}
+          className="cursor-pointer"
         >
           삭제
         </Button>
