@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/supabaseClient";
 import { useNavigate } from "react-router-dom";
-
+import { isOngoing } from "@/utils/dateUtils";
 const MyTakenList = () => {
   const [responses, setResponses] = useState<any[]>([]);
   const navigate = useNavigate();
@@ -56,21 +56,34 @@ const MyTakenList = () => {
             </span>
             진행중인지 종료된건지 보여주려고 바인딩하다가 난항을 겪고 있습니다. */}
       <div className=" flex flex-col gap-4">
-        {responses.map((resp) => (
-          <div
-            key={resp.id}
-            className="bg-white rounded-md shadow-sm p-4 cursor-pointer  min-w-[400px] flex flex-col "
-            onClick={() => navigate(`/take/${resp.form_id}`)}
-          >
-            <h2 className="font-semibold text-lg">
-              {resp.forms?.title || "제목 없음"}
-            </h2>
+        {responses.map((resp) => {
+          const isActive = isOngoing(resp.forms?.end_time);
 
-            <p className="text-gray-500 text-sm">
-              응답일: {new Date(resp.submitted_at).toLocaleDateString()}
-            </p>
-          </div>
-        ))}
+          return (
+            <div
+              key={resp.id}
+              className="bg-white rounded-md shadow-sm p-4 cursor-pointer min-w-[400px] flex flex-col"
+              onClick={() => navigate(`/take/${resp.form_id}`)}
+            >
+              <div className="flex justify-between items-center">
+                <h2 className="font-semibold text-lg">
+                  {resp.forms?.title || "제목 없음"}
+                </h2>
+                <span
+                  className={`text-sm font-bold ${
+                    isActive ? "text-green-600" : "text-gray-400 line-through"
+                  }`}
+                >
+                  {isActive ? "진행 중" : "종료"}
+                </span>
+              </div>
+
+              <p className="text-gray-500 text-sm">
+                응답일: {new Date(resp.submitted_at).toLocaleDateString()}
+              </p>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
