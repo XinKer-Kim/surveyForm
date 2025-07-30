@@ -49,7 +49,7 @@ const MyTakenList = () => {
         {responses.map((resp) => (
           <div
             key={resp.id}
-            className="bg-white rounded-md shadow-sm p-4 cursor-pointer"
+            className="bg-white rounded-md shadow-sm p-4 cursor-pointer flex flex-col justify-between min-h-[100px]"
             onClick={() => navigate(`/responses/${resp.form_id}`)}
           >
             <h2 className="font-semibold text-lg">
