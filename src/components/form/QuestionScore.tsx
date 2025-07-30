@@ -7,12 +7,14 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import QuestionFooterSwitch from "./QuestionFooterSwitch";
 
 interface Props {
   min: number;
   max: number;
   left_label: string;
   right_label: string;
+  required: boolean;
   onChange: (
     partial: Partial<{
       min: number;
@@ -21,6 +23,7 @@ interface Props {
       right_label: string;
     }>
   ) => void;
+  onToggleRequired: () => void;
   disabled?: boolean;
 }
 
@@ -29,7 +32,10 @@ const QuestionScore: FC<Props> = ({
   max,
   left_label,
   right_label,
+  required,
   onChange,
+  onToggleRequired,
+  disabled,
 }) => {
   const [scoreMin, setScoreMin] = useState<number>(min ?? 0);
   const [scoreMax, setScoreMax] = useState<number>(max ?? 5);
@@ -80,55 +86,64 @@ const QuestionScore: FC<Props> = ({
         })}
       </div>
 
-      {/* 점수 범위 선택 */}
-      <div className="flex gap-2 items-center">
-        <span className="text-sm text-gray-600">점수 범위</span>
-        <Select value={scoreMin.toString()} onValueChange={handleMinChange}>
-          <SelectTrigger className="w-[60px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="0">0</SelectItem>
-            <SelectItem value="1">1</SelectItem>
-          </SelectContent>
-        </Select>
-        <span>~</span>
-        <Select value={scoreMax.toString()} onValueChange={handleMaxChange}>
-          <SelectTrigger className="w-[60px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {Array.from({ length: 9 }, (_, i) => i + 2)
-              .filter((n) => n > scoreMin)
-              .map((n) => (
-                <SelectItem key={n} value={n.toString()}>
-                  {n}
-                </SelectItem>
-              ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* 좌우 라벨 */}
-      <div className="flex gap-2">
-        <Input
-          className="w-1/2"
-          placeholder={`점수 ${scoreMin}일 경우`}
-          value={labelLeft}
-          onChange={(e) => {
-            setLabelLeft(e.target.value);
-            onChange({ left_label: e.target.value });
-          }}
-        />
-        <Input
-          className="w-1/2"
-          placeholder={`점수 ${scoreMax}일 경우`}
-          value={labelRight}
-          onChange={(e) => {
-            setLabelRight(e.target.value);
-            onChange({ right_label: e.target.value });
-          }}
-        />
+      <div className="flex flex-col gap-2 mt-4">
+        {/* 점수 범위 선택 */}
+        <div className="flex gap-2 items-center">
+          <span className="text-sm text-gray-600">점수 범위</span>
+          <Select value={scoreMin.toString()} onValueChange={handleMinChange}>
+            <SelectTrigger className="w-[60px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="0">0</SelectItem>
+              <SelectItem value="1">1</SelectItem>
+            </SelectContent>
+          </Select>
+          <span>~</span>
+          <Select value={scoreMax.toString()} onValueChange={handleMaxChange}>
+            <SelectTrigger className="w-[60px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {Array.from({ length: 9 }, (_, i) => i + 2)
+                .filter((n) => n > scoreMin)
+                .map((n) => (
+                  <SelectItem key={n} value={n.toString()}>
+                    {n}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
+        </div>
+        {/* 좌우 라벨 */}
+        <div className="flex gap-2">
+          <Input
+            className="w-1/2"
+            placeholder={`점수 ${scoreMin}일 경우`}
+            value={labelLeft}
+            onChange={(e) => {
+              setLabelLeft(e.target.value);
+              onChange({ left_label: e.target.value });
+            }}
+          />
+          <Input
+            className="w-1/2"
+            placeholder={`점수 ${scoreMax}일 경우`}
+            value={labelRight}
+            onChange={(e) => {
+              setLabelRight(e.target.value);
+              onChange({ right_label: e.target.value });
+            }}
+          />
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          <QuestionFooterSwitch
+            label="답변 필수"
+            onCheckedChange={onToggleRequired}
+            checked={required}
+            disabled={disabled}
+          />
+        </div>
       </div>
     </div>
   );
