@@ -16,7 +16,7 @@ const ResultPage = () => {
   const { formId } = useParams();
   const [questions, setQuestions] = useState<any[]>([]);
   const [answers, setAnswers] = useState<any[]>([]);
-  const [respondentIds, setRespondentIds] = useState<string[]>([]);
+  const [totalRespondents, setTotalRespondents] = useState<number>(0);
 
   useEffect(() => {
     const loadData = async () => {
@@ -39,12 +39,15 @@ const ResultPage = () => {
         );
       console.log(aData);
       setAnswers(aData || []);
-      const ids = Array.from(
-        new Set((aData || []).map((a) => a.respondent_id))
+
+      // 전체 응답자 수 계산 (실제로 답변을 제출한 고유한 respondent_id 수)
+      const uniqueRespondents = new Set(
+        (aData || [])
+          .filter((a) => a.option_id !== null || a.text_answer !== null)
+          .map((a) => a.respondent_id)
       );
-      //TODO: 미응답 null 처리할 때, text_answer,option_id가 null일 때 체크!
-      console.log(ids);
-      setRespondentIds(ids);
+
+      setTotalRespondents(uniqueRespondents.size);
     };
 
     if (formId) loadData();
@@ -52,12 +55,16 @@ const ResultPage = () => {
 
   const renderQuestionResult = (q: any, index: number) => {
     const relatedAnswers = answers.filter((a) => a.question_id === q.id);
-    const total = relatedAnswers.length;
-    const totalRespondents = respondentIds.length;
-    const unanswered = total - respondentIds.length; // 전체 응답자 수 - 해당 질문 응답 수
+    // 해당 질문에 실제로 답변한 응답자 수
+    const questionRespondents = relatedAnswers.filter(
+      (a) => a.option_id !== null || a.text_answer !== null
+    ).length;
+    // 해당 질문의 미응답자 수
+    const unanswered = totalRespondents - questionRespondents;
+    // 해당 질문의 응답률
     const responseRate =
       totalRespondents > 0
-        ? ((totalRespondents / total) * 100).toFixed(1)
+        ? ((questionRespondents / totalRespondents) * 100).toFixed(1)
         : "0.0";
 
     const typeLabelMap: Record<string, string> = {
@@ -95,8 +102,8 @@ const ResultPage = () => {
                   <span>{d.name}</span>
                   <span>
                     {d.count}명 (
-                    {relatedAnswers.length > 0
-                      ? ((d.count / relatedAnswers.length) * 100).toFixed(0)
+                    {questionRespondents > 0
+                      ? ((d.count / questionRespondents) * 100).toFixed(0)
                       : 0}
                     %)
                   </span>
@@ -185,7 +192,7 @@ const ResultPage = () => {
             Q{index + 1}. {q.text}
           </div>
           <div className="text-sm text-gray-400 mt-1">
-            응답 {totalRespondents} · 미응답 {unanswered} · 응답률{" "}
+            응답 {questionRespondents} · 미응답 {unanswered} · 응답률{" "}
             {responseRate}%
           </div>
         </div>
