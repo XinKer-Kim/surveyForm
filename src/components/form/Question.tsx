@@ -46,6 +46,7 @@ const Question: FC<QuestionProps> = ({
     (question.options as OptionItem[]) || []
   );
   const [hasEtc, setHasEtc] = useState(question.hasEtc || false);
+  const [required, setRequired] = useState(question.required);
   const [allowMultiple, setAllowMultiple] = useState(
     question.allow_multiple || false
   );
@@ -66,6 +67,7 @@ const Question: FC<QuestionProps> = ({
       text: questionText,
       options,
       hasEtc,
+      required: required,
       allow_multiple: allowMultiple,
       unit: starUnit,
       min: scoreMin,
@@ -78,6 +80,7 @@ const Question: FC<QuestionProps> = ({
     questionText,
     options,
     hasEtc,
+    required,
     allowMultiple,
     starUnit,
     scoreMin,
@@ -149,11 +152,13 @@ const Question: FC<QuestionProps> = ({
         <QuestionMultipleChoice
           options={options}
           hasEtc={hasEtc}
+          required={required}
           allowMultiple={allowMultiple}
           onOptionChange={handleOptionChange}
           onDeleteOption={handleDeleteOption}
           onAddOption={handleAddOption}
           onToggleEtc={() => setHasEtc(!hasEtc)}
+          onToggleRequired={() => setRequired(!required)}
           onToggleMultiple={() => setAllowMultiple(!allowMultiple)}
           disabled={isLocked}
         />
@@ -161,9 +166,11 @@ const Question: FC<QuestionProps> = ({
       {questionType === "dropdown" && (
         <QuestionDropdown
           options={options}
+          required={required}
           onOptionChange={handleOptionChange}
           onDeleteOption={handleDeleteOption}
           onAddOption={handleAddOption}
+          onToggleRequired={() => setRequired(!required)}
           disabled={isLocked}
         />
       )}
@@ -171,7 +178,9 @@ const Question: FC<QuestionProps> = ({
       {questionType === "star" && (
         <QuestionStarRating
           unit={starUnit}
+          required={required}
           onChangeUnit={setStarUnit}
+          onToggleRequired={() => setRequired(!required)}
           disabled={isLocked}
         />
       )}
@@ -181,12 +190,14 @@ const Question: FC<QuestionProps> = ({
           max={question.max ?? 5}
           left_label={question.left_label ?? ""}
           right_label={question.right_label ?? ""}
+          required={required}
           onChange={(partial) => {
             onQuestionChange({
               ...question,
               ...partial,
             });
           }}
+          onToggleRequired={() => setRequired(!required)}
           disabled={isLocked}
         />
       )}
