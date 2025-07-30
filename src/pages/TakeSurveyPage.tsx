@@ -2,13 +2,20 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/supabaseClient";
 import { Button } from "@/components/ui/button";
-import { ClipboardX } from "lucide-react";
+import { ClipboardCheck, ClipboardX } from "lucide-react";
 import type { QuestionData } from "@/types/question";
 import type { FormData } from "@/types/form";
 import Swal from "sweetalert2";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/components/store/authStore";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 
 const TakeSurveyPage = () => {
   const { formId } = useParams();
@@ -18,11 +25,37 @@ const TakeSurveyPage = () => {
 
   const [formTitle, setFormTitle] = useState("");
   const [formEndTime, setFormEndTime] = useState<string | null>(null);
+  const [existingResponses, setExistingResponses] = useState<any[]>([]);
+  const [selectedResponseId, setSelectedResponseId] = useState<string | null>(
+    null
+  );
+  const [editMode, setEditMode] = useState<boolean>(false);
+  const [showForm, setShowForm] = useState<boolean>(false);
   const [questions, setQuestions] = useState<QuestionData[]>([]);
   const [answers, setAnswers] = useState<Record<string, any>>({});
 
   useEffect(() => {
-    if (!formId) return;
+    const fetchExisting = async () => {
+      if (!formId) return;
+
+      let query = supabase
+        .from("responses")
+        .select("id, submitted_at")
+        .eq("form_id", formId)
+        .order("submitted_at", { ascending: true });
+
+      if (user?.id) {
+        query = query.eq("user_id", user.id);
+      }
+
+      const { data, error } = await query;
+
+      if (data && data.length > 0) {
+        setExistingResponses(data);
+      }
+    };
+
+    fetchExisting();
 
     const fetchForm = async () => {
       const { data: form } = await supabase
@@ -47,7 +80,47 @@ const TakeSurveyPage = () => {
     };
 
     fetchForm();
-  }, [formId]);
+  }, [formId, user]);
+  useEffect(() => {
+    if (!editMode || !selectedResponseId) return;
+
+    const fetchAnswers = async () => {
+      const { data, error } = await supabase
+        .from("answers")
+        .select("question_id, text_answer, option_id")
+        .eq("response_id", selectedResponseId);
+
+      if (data) {
+        const mapped: Record<string, any> = {};
+        for (const ans of data) {
+          mapped[ans.question_id] = ans.option_id ?? ans.text_answer;
+        }
+        setAnswers(mapped);
+      }
+    };
+
+    fetchAnswers();
+  }, [editMode, selectedResponseId]);
+
+  if (!editMode && existingResponses.length > 0) {
+    return (
+      <div className="text-center mt-20 text-gray-600">
+        <ClipboardCheck className="w-full h-full mb-4" />
+        <p className="text-lg font-semibold mb-4">이미 참여한 설문입니다.</p>
+        <div className="flex justify-center gap-4">
+          <Button
+            onClick={() => {
+              setSelectedResponseId(existingResponses[0].id); // 최초 응답 선택
+              setEditMode(true);
+            }}
+          >
+            답변 수정
+          </Button>
+          <Button onClick={() => setEditMode(true)}>설문 추가 참여</Button>
+        </div>
+      </div>
+    );
+  }
 
   const handleAnswerOptionChange = (q: QuestionData, optId: any) => {
     if (q.allow_multiple) {
@@ -71,7 +144,9 @@ const TakeSurveyPage = () => {
     if (!user_id) {
       alert("로그인이 필요합니다.");
       return;
-    } //비로그인 설문 허용할거면 다른 로직 필요
+    }
+
+    // ✅ 필수 질문 확인
     for (const q of questions) {
       if (q.required) {
         const val = answers[q.id];
@@ -91,17 +166,42 @@ const TakeSurveyPage = () => {
         }
       }
     }
-    const { data: responseRow, error } = await supabase
-      .from("responses")
-      .insert({ user_id, form_id: formId })
-      .select()
-      .single();
 
-    if (error || !responseRow) {
-      alert("응답 저장 실패");
-      return;
+    // ✅ 응답 ID 확보
+    let responseId = selectedResponseId;
+
+    if (!editMode) {
+      // 신규 응답: responses에 insert
+      const { data: responseRow, error } = await supabase
+        .from("responses")
+        .insert({ user_id, form_id: formId })
+        .select()
+        .single();
+
+      if (error || !responseRow) {
+        alert("응답 저장 실패");
+        return;
+      }
+
+      responseId = responseRow.id;
+    } else {
+      // 수정 응답: 기존 answers 삭제
+      const { error: deleteError } = await supabase
+        .from("answers")
+        .delete()
+        .eq("response_id", selectedResponseId);
+
+      if (deleteError) {
+        Swal.fire({
+          icon: "error",
+          title: "기존 응답 삭제 실패",
+          text: deleteError.message,
+        });
+        return;
+      }
     }
 
+    // ✅ answers insert
     const answersToInsert = questions.flatMap((q) => {
       const value = answers[q.id];
 
@@ -112,11 +212,11 @@ const TakeSurveyPage = () => {
       )
         return [];
 
-      const isMulipleOptionType = q.type === "radio" && q.allow_multiple;
-      if (isMulipleOptionType) {
+      const isMultiple = q.type === "radio" && q.allow_multiple;
+      if (isMultiple) {
         return Array.isArray(value)
           ? value.map((optId) => ({
-              response_id: responseRow.id,
+              response_id: responseId,
               question_id: q.id,
               text_answer: null,
               option_id: optId,
@@ -124,12 +224,12 @@ const TakeSurveyPage = () => {
           : [];
       }
 
-      const isSingleOptionType =
+      const isSingle =
         (q.type === "radio" && !q.allow_multiple) || q.type === "dropdown";
-      if (isSingleOptionType) {
+      if (isSingle) {
         return [
           {
-            response_id: responseRow.id,
+            response_id: responseId,
             question_id: q.id,
             text_answer: null,
             option_id: value,
@@ -137,16 +237,16 @@ const TakeSurveyPage = () => {
         ];
       }
 
-      const isTextOrNumericType = [
+      const isTextOrNumeric = [
         "text_short",
         "text_long",
         "star",
         "score",
       ].includes(q.type);
-      if (isTextOrNumericType) {
+      if (isTextOrNumeric) {
         return [
           {
-            response_id: responseRow.id,
+            response_id: responseId,
             question_id: q.id,
             text_answer: value.toString(),
             option_id: null,
@@ -174,6 +274,7 @@ const TakeSurveyPage = () => {
       title: "응답이 제출되었습니다!",
       confirmButtonText: "확인",
     });
+
     navigate("/bookmarks");
   };
 
@@ -181,7 +282,7 @@ const TakeSurveyPage = () => {
   if (formEndTime && new Date(formEndTime) < new Date()) {
     return (
       <div className="flex flex-col items-center justify-center h-[70vh] text-center text-gray-500">
-        <ClipboardX className="w-12 h-12 mb-4" />
+        <ClipboardX className="w-full h-full mb-4" />
         <h2 className="text-xl font-semibold">설문이 종료되었습니다.</h2>
         <p className="text-sm mt-2">더 이상 응답할 수 없습니다.</p>
       </div>
@@ -190,6 +291,40 @@ const TakeSurveyPage = () => {
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
+      {existingResponses.length > 0 && editMode && (
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold mb-2">수정할 응답 선택</h2>
+          <Select
+            value={selectedResponseId ?? ""}
+            onValueChange={(val) => setSelectedResponseId(val)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="응답을 선택하세요" />
+            </SelectTrigger>
+            <SelectContent>
+              {existingResponses.map((resp, idx) => {
+                const dateStr = new Date(resp.submitted_at).toLocaleString(
+                  "ko-KR",
+                  {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }
+                );
+
+                return (
+                  <SelectItem key={resp.id} value={resp.id}>
+                    {`${idx + 1}번째 답변 : ${dateStr}`}
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
       <h1 className="text-2xl font-bold mb-6">{formTitle}</h1>
 
       {questions.map((q, i) => (
@@ -209,7 +344,6 @@ const TakeSurveyPage = () => {
             <div className="space-y-2">
               {q.options
                 ? q.options.map((opt: any) => {
-                    console.log(`q.allow_multiple : ${q.allow_multiple}`);
                     return (
                       <div key={opt.id} className="flex items-center space-x-2">
                         <Checkbox
