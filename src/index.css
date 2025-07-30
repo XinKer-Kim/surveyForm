@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -206,13 +206,13 @@
 }
 
 * {
-  font-family: 'sans-serif';
+  font-family: "sans-serif";
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    font-family: 'sans-serif';
+    font-family: "sans-serif";
   }
   body {
     @apply bg-background text-foreground;
@@ -229,4 +229,12 @@
 
 .border-naver {
   border-color: #0dcb67;
+}
+
+.switch-naver {
+  background-color: lightgray;
+
+  &[data-state="checked"] {
+    background-color: #0dcb67;
+  }
 }
