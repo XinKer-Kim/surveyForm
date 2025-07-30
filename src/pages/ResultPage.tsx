@@ -94,7 +94,7 @@ const ResultPage = () => {
               </ResponsiveContainer>
             </div>
             <div className="flex-1 space-y-2 text-sm text-gray-600 dark:text-gray-300">
-              {data.map((d) => (
+              {data.map((d: { name: string; count: number }) => (
                 <div key={d.name} className="flex justify-between">
                   <span>{d.name}</span>
                   <span>
@@ -139,7 +139,7 @@ const ResultPage = () => {
           <div className="space-y-2 mt-4">
             {q.type === "star" ? (
               <div className="flex items-center gap-3">
-                <StarDisplay score={avg} unit={unit} maxStars={max} />
+                <StarDisplay score={avg} maxStars={max} />
                 <p className="text-yellow-600 font-medium text-base">
                   {avg.toFixed(2)} / {max}
                 </p>

@@ -120,7 +120,7 @@ const FormActionMenu = ({
         <DropdownMenuItem
           className="cursor-pointer"
           onClick={handleForceClose}
-          disabled={endTime && new Date(endTime) < new Date()}
+          disabled={Boolean(endTime && new Date(endTime) < new Date())}
         >
           강제 종료
         </DropdownMenuItem>
