@@ -16,6 +16,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 const TakeSurveyPage = () => {
   const { formId } = useParams();
@@ -70,7 +71,7 @@ const TakeSurveyPage = () => {
       const { data: qs } = await supabase
         .from("questions")
         .select(
-          "id, text, type, required, allow_multiple, min, max, left_label, right_label, options(id, label)"
+          "id, text, type, required, allow_multiple, min, max, left_label, right_label, options(id, label, value)"
         )
         .eq("form_id", formId)
         .order("order_number", { ascending: true });
@@ -342,7 +343,7 @@ const TakeSurveyPage = () => {
           {q.type === "radio" && (
             <div className="space-y-2">
               {q.options
-                ? q.options.map((opt: any) => {
+                ? q.options.map((opt) => {
                     return (
                       <div key={opt.id} className="flex items-center space-x-2">
                         <Checkbox
@@ -360,6 +361,11 @@ const TakeSurveyPage = () => {
                           }
                         ></Checkbox>
                         <Label htmlFor={opt.id}>{opt.label}</Label>
+                        {opt.value === "etc" ? (
+                          <Input className="w-[200px]" />
+                        ) : (
+                          <></>
+                        )}
                       </div>
                     );
                   })
