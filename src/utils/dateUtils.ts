@@ -40,7 +40,8 @@ export const formatTime = (date: Date | string | undefined): string => {
 };
 export const isOngoing = (endTime: Date | undefined): boolean => {
   if (!endTime) return true;
-  return endTime > new Date();
+  const end = new Date(endTime); // 문자열인 경우도 포함
+  return end.getTime() > Date.now();
 };
 /**
  * 'yyyy. MM. dd.' 형식의 날짜 문자열과 'aaaa hh:mm' 형식의 시간 문자열을 하나의 표준 Date 객체로 변환.
