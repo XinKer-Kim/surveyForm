@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import QuestionFooterSwitch from "./QuestionFooterSwitch";
 
 interface OptionItem {
   id: string;
@@ -9,19 +10,21 @@ interface OptionItem {
 
 interface Props {
   options: OptionItem[];
-  hasEtc: boolean;
+  required: boolean;
   onOptionChange: (value: string, idx: number) => void;
   onDeleteOption: (idx: number) => void;
   onAddOption: () => void;
-  onToggleEtc: () => void;
+  onToggleRequired: () => void;
   disabled?: boolean;
 }
 
 const QuestionDropdown: FC<Props> = ({
   options,
+  required,
   onOptionChange,
   onDeleteOption,
   onAddOption,
+  onToggleRequired,
   disabled,
 }) => {
   return (
@@ -47,16 +50,26 @@ const QuestionDropdown: FC<Props> = ({
           </Button>
         </div>
       ))}
-      <div className="flex gap-2 mt-2">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={onAddOption}
-          disabled={disabled}
-        >
-          + 항목 추가
-        </Button>
+      <div className="flex flex-col gap-2 mt-4">
+        <div className="grid grid-cols-3 gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onAddOption}
+            disabled={disabled}
+          >
+            + 항목 추가
+          </Button>
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          <QuestionFooterSwitch
+            label="답변 필수"
+            onCheckedChange={onToggleRequired}
+            checked={required}
+            disabled={disabled}
+          />
+        </div>
       </div>
     </div>
   );

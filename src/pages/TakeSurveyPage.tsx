@@ -184,9 +184,8 @@ const TakeSurveyPage = () => {
           {q.type === "radio" && (
             <div className="space-y-2">
               {q.options
-                ? q.options.map((opt: any) => {
-                    console.log(`q.allow_multiple : ${q.allow_multiple}`);
-                    return (
+                ? q.options.map((opt: any) => (
+                    <>
                       <div key={opt.id} className="flex items-center space-x-2">
                         <Checkbox
                           id={opt.id}
@@ -204,8 +203,8 @@ const TakeSurveyPage = () => {
                         ></Checkbox>
                         <Label htmlFor={opt.id}>{opt.label}</Label>
                       </div>
-                    );
-                  })
+                    </>
+                  ))
                 : []}
             </div>
           )}

@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import QuestionFooterSwitch from "./QuestionFooterSwitch";
 
 interface OptionItem {
   id: string;
@@ -10,28 +11,27 @@ interface OptionItem {
 interface QuestionMultipleChoiceProps {
   options: OptionItem[];
   hasEtc: boolean;
+  required: boolean;
   allowMultiple: boolean;
   onOptionChange: (label: string, idx: number) => void;
   onDeleteOption: (idx: number) => void;
   onAddOption: () => void;
   onToggleEtc: () => void;
+  onToggleRequired: () => void;
   onToggleMultiple: () => void;
   disabled?: boolean;
 }
 
-/**
- * 객관식 (복수 선택 포함) 선택지 및 폼 제어 컴포넌트.
- * @param props QuestionMultipleChoiceProps Type
- * @returns
- */
 const QuestionMultipleChoice: FC<QuestionMultipleChoiceProps> = ({
   options,
   hasEtc,
+  required,
   allowMultiple,
   onOptionChange,
   onDeleteOption,
   onAddOption,
   onToggleEtc,
+  onToggleRequired,
   onToggleMultiple,
   disabled,
 }) => {
@@ -58,34 +58,41 @@ const QuestionMultipleChoice: FC<QuestionMultipleChoiceProps> = ({
           </Button>
         </div>
       ))}
-      <div className="flex gap-2 mt-2">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={onAddOption}
-          disabled={disabled}
-        >
-          + 선택지 추가
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={onToggleEtc}
-          disabled={disabled}
-        >
-          {hasEtc ? "✔ 기타 허용됨" : "기타 허용"}
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={onToggleMultiple}
-          disabled={disabled}
-        >
-          {allowMultiple ? "✔ 복수 선택 가능" : "복수 선택 허용"}
-        </Button>
+      <div className="flex flex-col gap-2 mt-4">
+        <div className="grid grid-cols-3 gap-4">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onAddOption}
+            disabled={disabled}
+          >
+            + 선택지 추가
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onToggleEtc}
+            disabled={disabled}
+          >
+            '기타' 추가
+          </Button>
+        </div>
+        <div className="grid grid-cols-3 gap-4">
+          <QuestionFooterSwitch
+            label="답변 필수"
+            onCheckedChange={onToggleRequired}
+            checked={required}
+            disabled={disabled}
+          />
+          <QuestionFooterSwitch
+            label="복수 선택"
+            onCheckedChange={onToggleMultiple}
+            checked={allowMultiple}
+            disabled={disabled}
+          />
+        </div>
       </div>
     </div>
   );
