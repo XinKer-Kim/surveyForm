@@ -23,7 +23,9 @@ const FormPreviewPage = () => {
 
       const { data: qs } = await supabase
         .from("questions")
-        .select("id, text, type, required, options(id, label)")
+        .select(
+          "id, text, type, required, min, max, left_label, right_label, options(id, label)"
+        )
         .eq("form_id", formId)
         .order("order_number", { ascending: true });
 
@@ -148,8 +150,8 @@ const FormPreviewPage = () => {
                 })}
               </div>
               <div className="flex justify-between text-sm text-gray-500 px-2">
-                <span>{q.leftLabel}</span>
-                <span>{q.rightLabel}</span>
+                <span>{q.left_label ?? ""}</span>
+                <span>{q.right_label ?? ""}</span>
               </div>
             </div>
           )}
