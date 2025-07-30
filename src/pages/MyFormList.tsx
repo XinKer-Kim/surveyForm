@@ -96,7 +96,17 @@ const MyFormList = () => {
               결과 확인
             </Button>
             <ShareLink formId={form.id} />
-            <FormActionMenu formId={form.id} />
+            <FormActionMenu
+              formId={form.id }
+              endTime={form.end_time ?? undefined}
+              onForceCloseSuccess={(newTime) =>
+                setForms((prev) =>
+                  prev.map((f) =>
+                    f.id === form.id ? { ...f, end_time: newTime } : f
+                  )
+                )
+              }
+            />
           </div>
         </div>
       ))}

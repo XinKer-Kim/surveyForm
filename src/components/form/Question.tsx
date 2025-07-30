@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Input from "./Input";
 import { v4 as uuidv4 } from "uuid";
+import type { QuestionData, QuestionType } from "@/types/question";
 
 interface OptionItem {
   id: string;
@@ -24,7 +25,7 @@ interface OptionItem {
 }
 
 interface QuestionProps {
-  question: any; // TODO: define proper type
+  question: QuestionData; // TODO: define proper type
   onQuestionChange: (newQuestion: any) => void;
   onDuplicate: () => void;
   onDelete: () => void;
@@ -41,10 +42,12 @@ const Question: FC<QuestionProps> = ({
 
   const [questionType, setQuestionType] = useState(question.type);
   const [questionText, setQuestionText] = useState(question.text || "");
-  const [options, setOptions] = useState<OptionItem[]>(question.options || []);
+  const [options, setOptions] = useState<OptionItem[]>(
+    (question.options as OptionItem[]) || []
+  );
   const [hasEtc, setHasEtc] = useState(question.hasEtc || false);
   const [allowMultiple, setAllowMultiple] = useState(
-    question.allowMultiple || false
+    question.allow_multiple || false
   );
   const [starUnit, setStarUnit] = useState(question.unit || 1);
   const [scoreMin, setScoreMin] = useState(question.min ?? 0);
@@ -63,7 +66,7 @@ const Question: FC<QuestionProps> = ({
       text: questionText,
       options,
       hasEtc,
-      allowMultiple,
+      allow_multiple: allowMultiple,
       unit: starUnit,
       min: scoreMin,
       max: scoreMax,
@@ -111,7 +114,7 @@ const Question: FC<QuestionProps> = ({
         />
         <Select
           value={questionType}
-          onValueChange={(val) => setQuestionType(val)}
+          onValueChange={(val) => setQuestionType(val as QuestionType)}
           disabled={isLocked}
         >
           <SelectTrigger className="w-[180px]">
@@ -130,7 +133,7 @@ const Question: FC<QuestionProps> = ({
 
       {questionType === "text_short" && <QuestionShortAnswer />}
       {questionType === "text_long" && <QuestionLongAnswer />}
-      {["radio", "checkbox"].includes(questionType) && (
+      {questionType === "radio" && (
         <QuestionMultipleChoice
           options={options}
           hasEtc={hasEtc}
