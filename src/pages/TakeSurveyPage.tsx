@@ -3,6 +3,11 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/supabaseClient";
 import { Button } from "@/components/ui/button";
 import { ClipboardX } from "lucide-react";
+import type { QuestionData } from "@/types/question";
+import type { FormData } from "@/types/form";
+import Swal from "sweetalert2";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 const TakeSurveyPage = () => {
   const { formId } = useParams();
@@ -10,7 +15,7 @@ const TakeSurveyPage = () => {
 
   const [formTitle, setFormTitle] = useState("");
   const [formEndTime, setFormEndTime] = useState<string | null>(null);
-  const [questions, setQuestions] = useState<any[]>([]);
+  const [questions, setQuestions] = useState<QuestionData[]>([]);
   const [answers, setAnswers] = useState<Record<string, any>>({});
 
   useEffect(() => {
@@ -29,16 +34,31 @@ const TakeSurveyPage = () => {
       const { data: qs } = await supabase
         .from("questions")
         .select(
-          "id, text, type, required, min, max, left_label, right_label, options(id, label)"
+          "id, text, type, required, allow_multiple, min, max, left_label, right_label, options(id, label)"
         )
         .eq("form_id", formId)
         .order("order_number", { ascending: true });
 
-      setQuestions(qs || []);
+      if (form) setFormTitle((form as FormData).title);
+      if (qs) setQuestions((qs as QuestionData[]) || []);
     };
 
     fetchForm();
   }, [formId]);
+
+  const handleAnswerOptionChange = (q: QuestionData, optId: any) => {
+    if (q.allow_multiple) {
+      setAnswers((prev) => {
+        const existingAnswers = (prev[q.id] as any[]) || [];
+        const newAnswers = existingAnswers.includes(optId)
+          ? existingAnswers.filter((id) => id !== optId)
+          : [...existingAnswers, optId];
+        return { ...prev, [q.id]: newAnswers };
+      });
+    } else {
+      setAnswers((prev) => ({ ...prev, [q.id]: optId }));
+    }
+  };
 
   const handleAnswerChange = (questionId: string, value: any) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
@@ -58,25 +78,78 @@ const TakeSurveyPage = () => {
       return;
     }
 
-    const answersToInsert = questions.map((q) => {
+    const answersToInsert = questions.flatMap((q) => {
       const value = answers[q.id];
 
-      const isOptionType = ["radio", "dropdown"].includes(q.type);
-      const isTextType = ["text_short", "text_long"].includes(q.type);
-      const isNumericType = ["star", "score"].includes(q.type);
+      if (
+        value === null ||
+        value === undefined ||
+        (Array.isArray(value) && value.length === 0)
+      )
+        return [];
 
-      return {
-        response_id: responseRow.id,
-        question_id: q.id,
-        text_answer:
-          isTextType || isNumericType ? value?.toString() ?? null : null,
-        option_id: isOptionType ? value ?? null : null,
-      };
+      const isMulipleOptionType = q.type === "radio" && q.allow_multiple;
+      if (isMulipleOptionType) {
+        return Array.isArray(value)
+          ? value.map((optId) => ({
+              response_id: responseRow.id,
+              question_id: q.id,
+              text_answer: null,
+              option_id: optId,
+            }))
+          : [];
+      }
+
+      const isSingleOptionType =
+        (q.type === "radio" && !q.allow_multiple) || q.type === "dropdown";
+      if (isSingleOptionType) {
+        return [
+          {
+            response_id: responseRow.id,
+            question_id: q.id,
+            text_answer: null,
+            option_id: value,
+          },
+        ];
+      }
+
+      const isTextOrNumericType = [
+        "text_short",
+        "text_long",
+        "star",
+        "score",
+      ].includes(q.type);
+      if (isTextOrNumericType) {
+        return [
+          {
+            response_id: responseRow.id,
+            question_id: q.id,
+            text_answer: value.toString(),
+            option_id: null,
+          },
+        ];
+      }
+
+      return [];
     });
 
-    await supabase.from("answers").insert(answersToInsert);
+    if (answersToInsert.length > 0) {
+      const { error } = await supabase.from("answers").insert(answersToInsert);
+      if (error) {
+        Swal.fire({
+          icon: "error",
+          title: "응답 저장 실패",
+          confirmButtonText: "확인",
+        });
+        return;
+      }
+    }
 
-    alert("응답이 제출되었습니다!");
+    Swal.fire({
+      icon: "success",
+      title: "응답이 제출되었습니다!",
+      confirmButtonText: "확인",
+    });
     navigate("/bookmarks");
   };
 
@@ -110,18 +183,30 @@ const TakeSurveyPage = () => {
           )}
           {q.type === "radio" && (
             <div className="space-y-2">
-              {q.options.map((opt: any) => (
-                <label key={opt.id} className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name={q.id}
-                    value={opt.id}
-                    checked={answers[q.id] === opt.id}
-                    onChange={() => handleAnswerChange(q.id, opt.id)}
-                  />
-                  {opt.label}
-                </label>
-              ))}
+              {q.options
+                ? q.options.map((opt: any) => {
+                    console.log(`q.allow_multiple : ${q.allow_multiple}`);
+                    return (
+                      <div key={opt.id} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={opt.id}
+                          className="flex items-center gap-2"
+                          checked={
+                            q.allow_multiple
+                              ? (Array.isArray(answers[q.id]) &&
+                                  answers[q.id].includes(opt.id)) ||
+                                false
+                              : answers[q.id] === opt.id
+                          }
+                          onCheckedChange={() =>
+                            handleAnswerOptionChange(q, opt.id)
+                          }
+                        ></Checkbox>
+                        <Label htmlFor={opt.id}>{opt.label}</Label>
+                      </div>
+                    );
+                  })
+                : []}
             </div>
           )}
           {q.type === "text_long" && (
@@ -140,11 +225,13 @@ const TakeSurveyPage = () => {
               <option value="" disabled>
                 선택하세요
               </option>
-              {q.options.map((opt: any) => (
-                <option key={opt.id} value={opt.id}>
-                  {opt.label}
-                </option>
-              ))}
+              {q.options
+                ? q.options.map((opt) => (
+                    <option key={opt.id} value={opt.id}>
+                      {opt.label}
+                    </option>
+                  ))
+                : []}
             </select>
           )}
           {q.type === "star" && (
