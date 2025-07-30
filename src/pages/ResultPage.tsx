@@ -44,9 +44,8 @@ const ResultPage = () => {
       const uniqueRespondents = new Set(
         (aData || [])
           .filter((a) => a.option_id !== null || a.text_answer !== null)
-          .map((a) => a.respondent_id)
+          .map((a) => a.question_id)
       );
-
       setTotalRespondents(uniqueRespondents.size);
     };
 
