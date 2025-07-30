@@ -10,6 +10,7 @@ import { SurveyPeriod } from "@/constants/survey";
 import { useAuthStore } from "@/components/store/authStore";
 import type { QuestionData } from "@/types/question";
 import type { FormData } from "@/types/form";
+import Swal from "sweetalert2";
 
 const FormBuilderPage = () => {
   const { formId, templateId } = useParams();
@@ -126,7 +127,11 @@ const FormBuilderPage = () => {
     const isAnyLocked = formElements.some((q) => (q.answers ?? []).length > 0);
 
     if (isAnyLocked) {
-      alert("응답이 존재하는 설문에는 질문을 추가할 수 없습니다.");
+      Swal.fire({
+        icon: "error",
+        title: "응답이 존재하는 설문에는 질문을 추가할 수 없습니다.",
+        confirmButtonText: "확인",
+      });
       return;
     }
     setFormElements([
@@ -149,7 +154,12 @@ const FormBuilderPage = () => {
   const handleSaveForm = async () => {
     console.log("userId:", userId);
     if (!userId) {
-      alert("로그인이 필요합니다.");
+      Swal.fire({
+        icon: "error",
+        title: "로그인이 필요합니다.",
+        confirmButtonText: "확인",
+      });
+
       return;
     }
     let resolvedFormId = formId;
@@ -167,7 +177,11 @@ const FormBuilderPage = () => {
 
       if (formError) {
         console.error("폼 생성 에러:", formError);
-        alert(`폼 생성 실패: ${formError.message}`);
+        Swal.fire({
+          icon: "error",
+          title: `폼 생성 실패: ${formError.message}`,
+          confirmButtonText: "확인",
+        });
         return;
       }
 
@@ -218,17 +232,27 @@ const FormBuilderPage = () => {
       console.error("질문 저장 실패:", saveError);
 
       if (saveError.code === "23503") {
-        alert(
-          "이미 응답이 존재하는 질문은 삭제하거나 유형을 바꿀 수 없습니다."
-        );
+        Swal.fire({
+          icon: "error",
+          title:
+            "이미 응답이 존재하는 질문은 삭제하거나 유형을 바꿀 수 없습니다.",
+          confirmButtonText: "확인",
+        });
       } else {
-        alert("폼 저장 중 오류가 발생했습니다.");
+        Swal.fire({
+          icon: "error",
+          title: "폼 저장 중 오류가 발생했습니다.",
+          confirmButtonText: "확인",
+        });
       }
 
       return;
     }
-
-    alert("폼 저장 완료!");
+    Swal.fire({
+      icon: "success",
+      title: "폼 저장 완료!",
+      confirmButtonText: "확인",
+    });
     navigate("/list");
   };
 
@@ -288,7 +312,7 @@ const FormBuilderPage = () => {
         ))}
       </div>
       <button
-        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded cursor-pointer"
         onClick={handleSaveForm}
       >
         폼 저장

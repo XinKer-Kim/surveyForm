@@ -40,13 +40,11 @@ const ResultPage = () => {
       console.log(aData);
       setAnswers(aData || []);
 
-      // 전체 응답자 수 계산 (실제로 답변을 제출한 고유한 respondent_id 수)
-      const uniqueRespondents = new Set(
-        (aData || [])
-          .filter((a) => a.option_id !== null || a.text_answer !== null)
-          .map((a) => a.question_id)
+      // 전체 응답 수 계산 (실제로 답변을 제출한 고유한 response_id 수)
+      const uniqueResponseIds = new Set(
+        (aData || []).map((a) => a.response_id)
       );
-      setTotalRespondents(uniqueRespondents.size);
+      setTotalRespondents(uniqueResponseIds.size);
     };
 
     if (formId) loadData();

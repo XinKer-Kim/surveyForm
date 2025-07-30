@@ -38,7 +38,6 @@ const QuestionStarRating: FC<Props> = ({
         ))}
         <span className="ml-2 text-sm text-gray-700">별점 미리보기</span>
       </div>
-
       <div className="flex flex-col gap-2 mt-4">
         <div className="grid grid-cols-3 gap-4">
           <div className="flex items-center gap-2 text-sm text-gray-600 mt-2">

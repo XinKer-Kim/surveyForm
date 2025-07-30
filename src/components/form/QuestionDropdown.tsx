@@ -45,6 +45,7 @@ const QuestionDropdown: FC<Props> = ({
             size="sm"
             onClick={() => onDeleteOption(idx)}
             disabled={disabled}
+            className="cursor-pointer"
           >
             삭제
           </Button>

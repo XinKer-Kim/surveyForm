@@ -56,12 +56,12 @@ const MyFormList = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="p-4">
+    <div className="w-full min-w-80 p-4">
       <h2 className="text-lg font-semibold mb-4">내 설문</h2>
       {forms.map((form: FormData) => (
         <div
           key={form.id}
-          className="border rounded-lg p-4 mb-4 bg-white shadow-sm"
+          className="w-full border rounded-lg p-4 mb-4 bg-white shadow-sm"
         >
           <div className="flex items-center justify-between mb-1">
             <span
@@ -92,12 +92,13 @@ const MyFormList = () => {
               onClick={() => navigate(`/results/${form.id}`)}
               variant="outline"
               size="sm"
+              className="cursor-pointer"
             >
               결과 확인
             </Button>
             <ShareLink formId={form.id} />
             <FormActionMenu
-              formId={form.id }
+              formId={form.id}
               endTime={form.end_time ?? undefined}
               onForceCloseSuccess={(newTime) =>
                 setForms((prev) =>

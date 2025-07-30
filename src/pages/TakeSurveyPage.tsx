@@ -8,10 +8,13 @@ import type { FormData } from "@/types/form";
 import Swal from "sweetalert2";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { useAuthStore } from "@/components/store/authStore";
 
 const TakeSurveyPage = () => {
   const { formId } = useParams();
   const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
+  const user_id = user?.id;
 
   const [formTitle, setFormTitle] = useState("");
   const [formEndTime, setFormEndTime] = useState<string | null>(null);
@@ -65,8 +68,29 @@ const TakeSurveyPage = () => {
   };
 
   const handleSubmit = async () => {
-    const user_id = "1dd927e3-2b9d-4d7a-a23d-578e1934bac3"; // 추후 auth로 교체
+    if (!user_id) {
+      alert("로그인이 필요합니다.");
+      return;
+    } //비로그인 설문 허용할거면 다른 로직 필요
+    for (const q of questions) {
+      if (q.required) {
+        const val = answers[q.id];
+        const isEmpty =
+          val === undefined ||
+          val === null ||
+          (typeof val === "string" && val.trim() === "") ||
+          (Array.isArray(val) && val.length === 0);
 
+        if (isEmpty) {
+          Swal.fire({
+            icon: "warning",
+            title: "필수 질문 누락",
+            text: `"${q.text}"에 대한 응답을 입력해주세요.`,
+          });
+          return;
+        }
+      }
+    }
     const { data: responseRow, error } = await supabase
       .from("responses")
       .insert({ user_id, form_id: formId })

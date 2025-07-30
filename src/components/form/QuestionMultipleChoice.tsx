@@ -53,6 +53,7 @@ const QuestionMultipleChoice: FC<QuestionMultipleChoiceProps> = ({
             size="sm"
             onClick={() => onDeleteOption(idx)}
             disabled={disabled}
+            className="cursor-pointer"
           >
             삭제
           </Button>
