@@ -30,7 +30,7 @@ const MyTakenList = () => {
 
       const { data, error } = await supabase
         .from("responses")
-        .select("id, form_id, submitted_at, forms(title, created_at)")
+        .select("id, form_id, submitted_at, forms(title, created_at, end_time)")
         .eq("user_id", userId);
 
       if (!error && data) {
@@ -43,18 +43,29 @@ const MyTakenList = () => {
     fetchResponses();
   }, [userId]);
   return (
-    <div className="p-6">
+    <div className=" p-6">
       <h1 className="text-2xl font-bold mb-6">내가 참여한 설문</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* TODO: <span
+              className={`text-sm font-bold ${
+                isOngoing(form.end_time ?? undefined)
+                  ? "text-green-600"
+                  : "text-gray-400 line-through"
+              }`}
+            >
+              {isOngoing(form.end_time ?? undefined) ? "진행 중" : "종료"}
+            </span>
+            진행중인지 종료된건지 보여주려고 바인딩하다가 난항을 겪고 있습니다. */}
+      <div className=" flex flex-col gap-4">
         {responses.map((resp) => (
           <div
             key={resp.id}
-            className="bg-white rounded-md shadow-sm p-4 cursor-pointer flex flex-col justify-between min-h-[100px]"
-            onClick={() => navigate(`/responses/${resp.form_id}`)}
+            className="bg-white rounded-md shadow-sm p-4 cursor-pointer  min-w-[400px] flex flex-col "
+            onClick={() => navigate(`/take/${resp.form_id}`)}
           >
             <h2 className="font-semibold text-lg">
               {resp.forms?.title || "제목 없음"}
             </h2>
+
             <p className="text-gray-500 text-sm">
               응답일: {new Date(resp.submitted_at).toLocaleDateString()}
             </p>
