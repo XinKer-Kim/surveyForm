@@ -278,6 +278,8 @@ const FormBuilderPage = () => {
           setStartType={setStartType}
           setStartDate={setStartDate}
           setStartTime={setStartTime}
+          setStartDateTime={setStartDateTime}
+          setEndDateTime={setEndDateTime}
           setEndType={setEndType}
           setEndDate={setEndDate}
           setEndTime={setEndTime}

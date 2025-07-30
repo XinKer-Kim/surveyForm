@@ -12,7 +12,7 @@ import {
 } from "../ui/dialog";
 import { Input } from "../ui/input";
 import DateConfigRow from "./DateConfigRow";
-import { formatDate, formatTime } from "@/utils/dateUtils";
+import { parseDateTime, formatDate, formatTime } from "@/utils/dateUtils";
 import { SurveyPeriod } from "@/constants/survey";
 
 interface QuestionTitleProps {
@@ -36,6 +36,8 @@ interface QuestionTitleProps {
   setEndTime: React.Dispatch<React.SetStateAction<string>>;
   handleAddInput: () => void;
   handleAddPage: () => void;
+  setStartDateTime: React.Dispatch<React.SetStateAction<Date | undefined>>;
+  setEndDateTime: React.Dispatch<React.SetStateAction<Date | undefined>>;
 }
 
 function QuestionTitle({
@@ -54,9 +56,11 @@ function QuestionTitle({
   setStartType,
   setStartDate,
   setStartTime,
+  setStartDateTime,
   setEndType,
   setEndDate,
   setEndTime,
+  setEndDateTime,
   handleAddInput,
   handleAddPage,
 }: QuestionTitleProps) {
@@ -114,10 +118,18 @@ function QuestionTitle({
 
   const handleDialogConfirm = () => {
     setStartType(startTypeState);
-    setStartDate(startDateState);
     setStartTime(startTimeState);
-    setEndType(endTypeState);
     setEndDate(endDateState);
+    setStartDateTime(
+      startTypeState === SurveyPeriod.CUSTOM
+        ? parseDateTime(startDateState, startTimeState)
+        : undefined
+    );
+    setEndDateTime(
+      endTypeState === SurveyPeriod.CUSTOM
+        ? parseDateTime(endDateState, endTimeState)
+        : undefined
+    );
     setEndTime(endTimeState);
 
     if (isDialogOpen) setIsDialogOpen(false);
