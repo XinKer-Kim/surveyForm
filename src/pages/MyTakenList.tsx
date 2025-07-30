@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/supabaseClient";
 import { useNavigate } from "react-router-dom";
-import { isOngoing } from "@/utils/dateUtils";
+import { formatDate, isOngoing } from "@/utils/dateUtils";
 const MyTakenList = () => {
   const [responses, setResponses] = useState<any[]>([]);
   const navigate = useNavigate();
@@ -30,11 +30,17 @@ const MyTakenList = () => {
 
       const { data, error } = await supabase
         .from("responses")
-        .select("id, form_id, submitted_at, forms(title, created_at, end_time)")
+        .select("form_id, forms(title, created_at, end_time)")
         .eq("user_id", userId);
 
       if (!error && data) {
-        setResponses(data);
+        const uniqueForms = Array.from(
+          new Map(data.map((resp) => [resp.form_id, resp.forms])).entries()
+        ).map(([form_id, form]) => ({
+          form_id,
+          ...form,
+        }));
+        setResponses(uniqueForms);
       } else {
         console.error("응답 불러오기 실패:", error);
       }
@@ -42,48 +48,32 @@ const MyTakenList = () => {
 
     fetchResponses();
   }, [userId]);
+
   return (
     <div className=" p-6">
       <h1 className="text-2xl font-bold mb-6">내가 참여한 설문</h1>
-      {/* TODO: <span
-              className={`text-sm font-bold ${
-                isOngoing(form.end_time ?? undefined)
-                  ? "text-green-600"
-                  : "text-gray-400 line-through"
+
+      <div className=" flex flex-col gap-4">
+        {responses.map((f) => (
+          <div
+            key={f.form_id}
+            className="bg-white rounded-md shadow-sm p-4 cursor-pointer"
+            onClick={() => navigate(`/take/${f.form_id}`)}
+          >
+            <h2 className="font-semibold text-lg">{f.title}</h2>
+            <p className="text-gray-500 text-sm">
+              {f.start_time ? formatDate(f.start_time) : "시작 시간 없음"} ~
+              {f.end_time ? formatDate(f.end_time) : "종료 시간 없음"}
+            </p>
+            <span
+              className={`text-sm font-semibold ${
+                isOngoing(f.end_time) ? "text-green-600" : "text-gray-400"
               }`}
             >
-              {isOngoing(form.end_time ?? undefined) ? "진행 중" : "종료"}
+              {isOngoing(f.end_time) ? "진행 중" : "종료"}
             </span>
-            진행중인지 종료된건지 보여주려고 바인딩하다가 난항을 겪고 있습니다. */}
-      <div className=" flex flex-col gap-4">
-        {responses.map((resp) => {
-          const isActive = isOngoing(resp.forms?.end_time);
-
-          return (
-            <div
-              key={resp.id}
-              className="bg-white rounded-md shadow-sm p-4 cursor-pointer min-w-[400px] flex flex-col"
-              onClick={() => navigate(`/take/${resp.form_id}`)}
-            >
-              <div className="flex justify-between items-center">
-                <h2 className="font-semibold text-lg">
-                  {resp.forms?.title || "제목 없음"}
-                </h2>
-                <span
-                  className={`text-sm font-bold ${
-                    isActive ? "text-green-600" : "text-gray-400 line-through"
-                  }`}
-                >
-                  {isActive ? "진행 중" : "종료"}
-                </span>
-              </div>
-
-              <p className="text-gray-500 text-sm">
-                응답일: {new Date(resp.submitted_at).toLocaleDateString()}
-              </p>
-            </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
     </div>
   );
