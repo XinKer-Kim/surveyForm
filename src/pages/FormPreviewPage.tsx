@@ -72,7 +72,7 @@ const FormPreviewPage = () => {
 
           {q.type === "radio" && (
             <div className="space-y-2">
-              {q.options.map((opt) => (
+              {q.options.map((opt: any) => (
                 <label key={opt.id} className="flex items-center gap-2">
                   <input
                     type="radio"
@@ -105,7 +105,7 @@ const FormPreviewPage = () => {
               <option value="" disabled>
                 선택하세요
               </option>
-              {q.options.map((opt) => (
+              {q.options.map((opt: any) => (
                 <option key={opt.id} value={opt.id}>
                   {opt.label}
                 </option>

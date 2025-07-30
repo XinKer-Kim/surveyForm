@@ -99,11 +99,15 @@ const MyFormList = () => {
             <ShareLink formId={form.id} />
             <FormActionMenu
               formId={form.id}
-              endTime={form.end_time ?? undefined}
+              endTime={
+                form.end_time ? new Date(form.end_time).toISOString() : null
+              }
               onForceCloseSuccess={(newTime) =>
                 setForms((prev) =>
                   prev.map((f) =>
-                    f.id === form.id ? { ...f, end_time: newTime } : f
+                    f.id === form.id
+                      ? ({ ...f, end_time: new Date(newTime) } as FormData)
+                      : f
                   )
                 )
               }

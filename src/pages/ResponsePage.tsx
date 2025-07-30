@@ -54,7 +54,7 @@ const ResponsePage = () => {
       }
 
       setSubmittedAt(data.submitted_at);
-      setFormTitle(data.forms.title);
+      setFormTitle(data.forms[0]?.title ?? "제목 없음");
 
       const parsed: AnswerWithQuestion[] = data.answers.map((a: any) => {
         const question = a.questions;
