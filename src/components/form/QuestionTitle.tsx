@@ -200,14 +200,14 @@ function QuestionTitle({
                     <DialogClose asChild>
                       <Button
                         type="button"
-                        className="w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded"
+                        className="w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded cursor-pointer"
                       >
                         취소
                       </Button>
                     </DialogClose>
                     <Button
                       type="button"
-                      className="w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded"
+                      className="w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded cursor-pointer"
                       onClick={handleDialogConfirm}
                     >
                       확인
@@ -221,13 +221,13 @@ function QuestionTitle({
         {/* '질문 추가', '페이지 추가' 버튼 컨테이너 */}
         <div className="w-full flex items-center justify-center gap-2">
           <Button
-            className="w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded"
+            className="w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded cursor-pointer"
             onClick={handleAddInput}
           >
             질문 추가
           </Button>
           <Button
-            className="w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded"
+            className="w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 rounded cursor-pointer"
             onClick={handleAddPage}
           >
             페이지 추가
