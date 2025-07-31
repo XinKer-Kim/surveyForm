@@ -25,18 +25,16 @@ import FormPreviewPage from "./pages/FormPreviewPage";
 
 function App() {
   const user = useAuthStore((state) => state.user);
-  const setUser = useAuthStore((state) => state.setUser);
+  const isAuthReady = useAuthStore((state) => state.isAuthReady);
+  const initAuth = useAuthStore((state) => state.initAuth);
 
   useEffect(() => {
-    const storedUser = sessionStorage.getItem("supabase_session");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
+    initAuth();
   }, []);
 
   const location = useLocation();
   const pathname = location.pathname;
-
+  if (!isAuthReady) return null;
   // 비로그인 허용 경로들
   const publicRoutes = [
     // /^\/$/, // 홈
