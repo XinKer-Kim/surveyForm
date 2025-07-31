@@ -210,7 +210,7 @@ function SignUp() {
                             id="gender-undefined"
                           />
                         </FormControl>
-                        <Label htmlFor="gender-undefined">선택 포기</Label>
+                        <Label htmlFor="gender-undefined">비공개</Label>
                       </FormItem>
                     </RadioGroup>
                   </FormControl>
