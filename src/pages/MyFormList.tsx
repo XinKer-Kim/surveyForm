@@ -84,7 +84,7 @@ const MyFormList = () => {
             {form.title}
           </h3>
           <p className="text-xs text-gray-500 mb-2">
-            {form.start_time ? formatDate(form.start_time) : "즉시 시작"} ~{" "}
+            {form.start_time ? formatDate(form.start_time) : "즉시 시작"} ~
             {form.end_time ? formatDate(form.end_time) : "제한 없음"}
           </p>
           <div className="flex gap-2">

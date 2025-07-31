@@ -83,11 +83,6 @@ const FormBuilderPage = () => {
           .eq("form_id", formId)
           .order("order_number", { ascending: true });
 
-        // const questionsWithFlags = (rawQuestions ?? []).map((q) => ({
-        //   ...q,
-        //   hasAnswer: (q.answers ?? []).length > 0,
-        // }));
-
         setTitle(form?.title ?? "");
         setDescription(form?.description ?? "");
         setStartDateTime(form?.start_time ?? undefined);
@@ -98,6 +93,17 @@ const FormBuilderPage = () => {
         setEndType(
           form?.end_time ? SurveyPeriod.CUSTOM : SurveyPeriod.UNLIMITED
         );
+
+        (rawQuestions as QuestionData[]).forEach((q) => {
+          if (q.options && q.options.length > 0) {
+            q.options.forEach((o) => {
+              if (o.value === "etc") {
+                q.hasEtc = true;
+                return;
+              }
+            });
+          }
+        });
 
         setFormElements((rawQuestions as QuestionData[]) ?? []);
       };
@@ -215,14 +221,36 @@ const FormBuilderPage = () => {
             max: q.max ?? null,
             left_label: q.left_label ?? null,
             right_label: q.right_label ?? null,
-            options: ["radio", "dropdown", "checkbox"].includes(q.type)
-              ? q.options?.map((opt, j) => ({
+            options: (() => {
+              // 타입이 해당하지 않으면 빈 배열 즉시 반환.
+              if (!["radio", "dropdown", "checkbox"].includes(q.type))
+                return [];
+
+              // 기존 옵션들 먼저 매핑.
+              const baseOptions =
+                q.options?.map((opt, j) => ({
                   id: opt.id,
                   label: opt.label,
                   value: opt.value ?? null,
                   order_number: j + 1,
-                })) ?? []
-              : [],
+                })) ?? [];
+
+              // 이미 '기타' 옵션이 있는지 확인.
+              const hasExistingEtc = baseOptions.some((o) => o.value === "etc");
+
+              // q.hasEtc === true 이고 '기타' 옵션이 아직 없는 경우에만
+              // '기타' 옵션을 배열의 마지막에 추가.
+              if (q.hasEtc && !hasExistingEtc) {
+                baseOptions.push({
+                  id: uuidv4(),
+                  label: "기타", // 화면에 표시될 텍스트
+                  value: "etc", // "etc" 문자열로 '기타' 옵션과 일반 객관식 선택지를 구분.
+                  order_number: baseOptions.length + 1, // 항상 기존 옵션들의 마지막 순서.
+                });
+              }
+
+              return baseOptions;
+            })(), // 함수 즉시 실행.
           })),
         },
       }
@@ -278,6 +306,8 @@ const FormBuilderPage = () => {
           setStartType={setStartType}
           setStartDate={setStartDate}
           setStartTime={setStartTime}
+          setStartDateTime={setStartDateTime}
+          setEndDateTime={setEndDateTime}
           setEndType={setEndType}
           setEndDate={setEndDate}
           setEndTime={setEndTime}
