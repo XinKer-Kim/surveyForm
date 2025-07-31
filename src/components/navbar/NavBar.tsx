@@ -52,7 +52,7 @@ function NavBar() {
           <div className="h-full flex flex-row items-center gap-4 text-lg">
             <Link to={"/"}>
               <img
-                src="src/assets/icons/logo.png"
+                src="/logo.png"
                 alt="@Logo"
                 className="w-[40px] h-[40px] sm:w-10 sm:h-10 object-contain"
               />
