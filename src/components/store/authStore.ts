@@ -12,11 +12,13 @@ interface AuthState {
   isAuthReady: boolean;
   setUser: (user: User | null) => void;
   initAuth: () => void;
+  clearUser: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthReady: false,
+  clearUser: () => set({ user: null, isAuthReady: true }),
   setUser: (user) => set({ user }),
   initAuth: () => {
     const storedUser = sessionStorage.getItem("supabase_session");
