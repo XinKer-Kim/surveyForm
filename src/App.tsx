@@ -39,7 +39,7 @@ function App() {
 
   // 비로그인 허용 경로들
   const publicRoutes = [
-    /^\/$/, // 홈
+    // /^\/$/, // 홈
     /^\/sign-in$/,
     /^\/sign-up$/,
     /^\/take\/[^/]+$/, // /take/:formId
